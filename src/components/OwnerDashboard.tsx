@@ -86,6 +86,26 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   // General Booking Data
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Custom sandboxed confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const customConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmModal(null);
+      }
+    });
+  };
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   // Load bookings database
@@ -212,16 +232,20 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
 
   // Delete Booking (CRM Admin capability)
   const deleteBooking = (id: string) => {
+    const title = currentLanguage === 'hindi' ? 'हटाने की पुष्टि करें' : currentLanguage === 'telugu' ? 'తొలగింపు నిర్ధారించండి' : 'Confirm Deletion';
     const confirmMessage = currentLanguage === 'hindi' 
       ? "क्या आप निश्चित रूप से इस बुकिंग रिकॉर्ड को हटाना चाहते हैं?" 
+      : currentLanguage === 'telugu'
+      ? "మీరు ఖచ్చితంగా ఈ బుకింగ్ రికార్డును తొలగించాలనుకుంటున్నారా?"
       : "Are you sure you want to delete this booking record from CRM?";
-    if (window.confirm(confirmMessage)) {
+
+    customConfirm(title, confirmMessage, () => {
       const filtered = bookings.filter(b => b.id !== id);
       localStorage.setItem('neelakanta_bookings', JSON.stringify(filtered));
       localStorage.setItem('neelkanth_bookings', JSON.stringify(filtered));
       setBookings(filtered);
       window.dispatchEvent(new Event('storage'));
-    }
+    });
   };
 
   // Reset Seeding (CRM Admin capability)
@@ -587,12 +611,15 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   };
 
   const handleDeleteOffer = (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this offer?")) {
-      return;
-    }
-    const updated = offers.filter(o => o.id !== id);
-    localStorage.setItem('neelakanta_offers', JSON.stringify(updated));
-    setOffers(updated);
+    customConfirm(
+      "Delete Offer?",
+      "Are you sure you want to delete this promotional offer? This cannot be undone.",
+      () => {
+        const updated = offers.filter(o => o.id !== id);
+        localStorage.setItem('neelakanta_offers', JSON.stringify(updated));
+        setOffers(updated);
+      }
+    );
   };
 
   // Filter Bookings for Admin view
@@ -1117,9 +1144,13 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
                           {bk.status === 'Pending' && (
                             <button
                               onClick={() => {
-                                if (window.confirm("Do you want to cancel your service appointment slot request?")) {
-                                  updateStatus(bk.id, 'Cancelled');
-                                }
+                                customConfirm(
+                                  currentLanguage === 'hindi' ? 'अनुरोध रद्द करें?' : currentLanguage === 'telugu' ? 'అభ్యర్థనను రద్దు చేయాలా?' : 'Cancel Booking Request?',
+                                  currentLanguage === 'hindi' ? 'क्या आप अपना सर्विस अपॉइंटमेंट स्लॉट अनुरोध रद्द करना चाहते हैं?' : currentLanguage === 'telugu' ? 'మీరు మీ సర్వీస్ అపాయింట్‌మెంట్ స్లాట్ అభ్యర్థనను రద్దు చేయాలనుకుంటున్నారా?' : 'Do you want to cancel your service appointment slot request?',
+                                  () => {
+                                    updateStatus(bk.id, 'Cancelled');
+                                  }
+                                );
                               }}
                               className="bg-zinc-800 hover:bg-red-950 text-zinc-400 hover:text-red-400 px-3 py-1.5 border border-white/5 hover:border-red-900 rounded-sm text-[10px] font-bold font-mono uppercase tracking-wider transition-all cursor-pointer"
                             >
@@ -1858,6 +1889,45 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
               </form>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal Overlay */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-fadeIn">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            onClick={() => setConfirmModal(null)}
+          />
+          {/* Modal Container */}
+          <div className="bg-zinc-950 border border-white/10 rounded-2xl p-6 max-w-sm w-full relative z-10 text-left shadow-2xl">
+            <div className="flex items-center gap-3 text-[#E31E24] mb-3">
+              <AlertTriangle className="w-6 h-6 shrink-0 text-[#E31E24]" />
+              <h3 className="text-sm font-black uppercase tracking-wider font-mono text-white">
+                {confirmModal.title}
+              </h3>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed font-sans mb-6">
+              {confirmModal.message}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                {currentLanguage === 'hindi' ? 'रद्द करें' : currentLanguage === 'telugu' ? 'రద్దు చేయి' : 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={confirmModal.onConfirm}
+                className="px-4 py-2 rounded-lg bg-[#E31E24] hover:bg-red-700 text-white font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer shadow-lg shadow-red-600/10"
+              >
+                {currentLanguage === 'hindi' ? 'पुष्टि करें' : currentLanguage === 'telugu' ? 'ధృవీకరించు' : 'Confirm'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

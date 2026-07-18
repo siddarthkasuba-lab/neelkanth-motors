@@ -32,6 +32,26 @@ export default function OffersAdmin() {
   // UI state
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+
+  // Custom confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const customConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmModal(null);
+      }
+    });
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Trigger Toast Notification
@@ -159,19 +179,21 @@ export default function OffersAdmin() {
 
   // Delete Offer
   const handleDeleteOffer = async (id: string) => {
-    if (!window.confirm("Are you sure you want to permanently delete this offer? This cannot be undone.")) {
-      return;
-    }
-
-    try {
-      await deleteOffer(id);
-      triggerToast("Offer deleted successfully.");
-      if (editingId === id) handleResetForm();
-      refresh();
-    } catch (err) {
-      console.error("Delete offer failed", err);
-      triggerToast("Failed to delete offer.", 'error');
-    }
+    customConfirm(
+      "Confirm Deletion",
+      "Are you sure you want to permanently delete this offer? This cannot be undone.",
+      async () => {
+        try {
+          await deleteOffer(id);
+          triggerToast("Offer deleted successfully.");
+          if (editingId === id) handleResetForm();
+          refresh();
+        } catch (err) {
+          console.error("Delete offer failed", err);
+          triggerToast("Failed to delete offer.", 'error');
+        }
+      }
+    );
   };
 
   // Filter existing list
@@ -532,6 +554,44 @@ export default function OffersAdmin() {
 
       </div>
 
+      {/* Custom Confirmation Modal Overlay */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-fadeIn">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setConfirmModal(null)}
+          />
+          {/* Modal Container */}
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 max-w-sm w-full relative z-10 text-left shadow-2xl">
+            <div className="flex items-center gap-3 text-red-600 mb-3">
+              <AlertCircle className="w-6 h-6 shrink-0 text-red-600" />
+              <h3 className="text-sm font-black uppercase tracking-wider font-mono text-zinc-900">
+                {confirmModal.title}
+              </h3>
+            </div>
+            <p className="text-xs text-zinc-600 leading-relaxed font-sans mb-6">
+              {confirmModal.message}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-250 text-zinc-600 hover:text-zinc-800 font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmModal.onConfirm}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer shadow-lg shadow-red-600/10"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -21,6 +21,26 @@ export default function AdminDashboard({ onClose }: DashboardProps) {
   // Bookings State
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Custom confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const customConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmModal(null);
+      }
+    });
+  };
   const [statusFilter, setStatusFilter] = useState<'all' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled'>('all');
 
   // Load bookings from local storage
@@ -68,15 +88,19 @@ export default function AdminDashboard({ onClose }: DashboardProps) {
 
   // Delete booking
   const handleDeleteBooking = (id: string) => {
-    if (window.confirm("Are you sure you want to permanently delete this service booking record?")) {
-      const updated = bookings.filter(b => b.id !== id);
-      localStorage.setItem('neelakanta_bookings', JSON.stringify(updated));
-      localStorage.setItem('neelkanth_bookings', JSON.stringify(updated)); // sync both keys
-      setBookings(updated);
-      
-      // Dispatch storage event manually for same-tab reactive updates in other components
-      window.dispatchEvent(new Event('storage'));
-    }
+    customConfirm(
+      "Confirm Deletion",
+      "Are you sure you want to permanently delete this service booking record?",
+      () => {
+        const updated = bookings.filter(b => b.id !== id);
+        localStorage.setItem('neelakanta_bookings', JSON.stringify(updated));
+        localStorage.setItem('neelkanth_bookings', JSON.stringify(updated)); // sync both keys
+        setBookings(updated);
+        
+        // Dispatch storage event manually for same-tab reactive updates in other components
+        window.dispatchEvent(new Event('storage'));
+      }
+    );
   };
 
   // Compute dynamic stats from current state
@@ -385,6 +409,45 @@ export default function AdminDashboard({ onClose }: DashboardProps) {
         )}
 
       </div>
+
+      {/* Custom Confirmation Modal Overlay */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-fadeIn">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            onClick={() => setConfirmModal(null)}
+          />
+          {/* Modal Container */}
+          <div className="bg-zinc-950 border border-white/10 rounded-2xl p-6 max-w-sm w-full relative z-10 text-left shadow-2xl">
+            <div className="flex items-center gap-3 text-[#E31E24] mb-3">
+              <AlertTriangle className="w-6 h-6 shrink-0 text-[#E31E24]" />
+              <h3 className="text-sm font-black uppercase tracking-wider font-mono text-white">
+                {confirmModal.title}
+              </h3>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed font-sans mb-6">
+              {confirmModal.message}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmModal.onConfirm}
+                className="px-4 py-2 rounded-lg bg-[#E31E24] hover:bg-red-700 text-white font-bold text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer shadow-lg shadow-red-600/10"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
