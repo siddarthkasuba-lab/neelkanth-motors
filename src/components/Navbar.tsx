@@ -227,21 +227,23 @@ export default function Navbar({
               </span>
             </button>
 
-            {/* Venu CRM Button (Admin Page) */}
-            <button
-              onClick={() => onPageChange('admin-portal')}
-              className={`p-2.5 rounded-sm border text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
-                activePage === 'admin-portal'
-                  ? 'bg-[#E31E24]/20 border-[#E31E24]/50 text-[#E31E24]'
-                  : 'bg-zinc-100 border-zinc-200 text-[#E31E24]/95 hover:text-[#E31E24] hover:border-[#E31E24]/40'
-              }`}
-              title="Access Owner CRM Workflows"
-            >
-              <Settings className="w-3.5 h-3.5 text-[#E31E24]" />
-              <span className="font-mono text-[10px] uppercase font-bold tracking-widest">
-                {currentLanguage === 'hindi' ? 'मालिक लॉगिन' : currentLanguage === 'telugu' ? 'ఓనర్ లాగిన్' : 'Owner CRM'}
-              </span>
-            </button>
+            {/* Venu CRM Button (Admin Page) - only visible if logged in as admin */}
+            {isAdmin && (
+              <button
+                onClick={() => onPageChange('admin-portal')}
+                className={`p-2.5 rounded-sm border text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activePage === 'admin-portal'
+                    ? 'bg-[#E31E24]/20 border-[#E31E24]/50 text-[#E31E24]'
+                    : 'bg-zinc-100 border-zinc-200 text-[#E31E24]/95 hover:text-[#E31E24] hover:border-[#E31E24]/40'
+                }`}
+                title="Access Owner CRM Workflows"
+              >
+                <Settings className="w-3.5 h-3.5 text-[#E31E24]" />
+                <span className="font-mono text-[10px] uppercase font-bold tracking-widest">
+                  {currentLanguage === 'hindi' ? 'मालिक लॉगिन' : currentLanguage === 'telugu' ? 'ఓనర్ లాగిన్' : 'Owner CRM'}
+                </span>
+              </button>
+            )}
 
             {/* Quick dial */}
             <a
@@ -645,7 +647,7 @@ export default function Navbar({
 
           <div className="pt-4 border-t border-zinc-200 flex flex-col space-y-3">
             {/* Direct Page Links on Mobile */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className={`grid ${isAdmin ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -661,20 +663,22 @@ export default function Navbar({
                 <span>Track Booking</span>
               </button>
 
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  onPageChange('admin-portal');
-                }}
-                className={`border rounded-lg py-2.5 px-3 flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
-                  activePage === 'admin-portal'
-                    ? 'bg-red-600 border-red-600 text-white font-black'
-                    : 'bg-zinc-50 border-zinc-200 text-[#E31E24] hover:bg-zinc-100'
-                }`}
-              >
-                <Settings className="w-4 h-4" />
-                <span>Owner CRM</span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    onPageChange('admin-portal');
+                  }}
+                  className={`border rounded-lg py-2.5 px-3 flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
+                    activePage === 'admin-portal'
+                      ? 'bg-red-600 border-red-600 text-white font-black'
+                      : 'bg-zinc-50 border-zinc-200 text-[#E31E24] hover:bg-zinc-100'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Owner CRM</span>
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-2">

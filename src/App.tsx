@@ -227,7 +227,13 @@ export default function App() {
           {/* Owner and contact quick lines */}
           <div className="text-center text-zinc-400">
             <span className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider font-bold block mb-1">Workshop Manager</span>
-            <span className="text-white font-black text-sm block uppercase italic font-display">{BUSINESS_INFO.owner} (Venu)</span>
+            <span 
+              onClick={() => setActivePage('admin-portal')}
+              className="text-white hover:text-red-500 font-black text-sm block uppercase italic font-display cursor-pointer transition-colors"
+              title="Staff Portal Entry"
+            >
+              {BUSINESS_INFO.owner} (Venu)
+            </span>
             <span className="text-zinc-500 text-xs font-mono block mt-2">📞 +91 {BUSINESS_INFO.contacts[0].number}</span>
             <span className="text-zinc-500 text-xs font-mono block">📞 +91 {BUSINESS_INFO.contacts[1].number}</span>
           </div>

@@ -669,16 +669,6 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         activeTab === 'user' ? (
           /* DEDICATED USER LOGIN PAGE */
           <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-xl w-full mx-auto animate-fadeIn">
-            {/* Top right staff toggle switch */}
-            <div className="absolute top-0 right-0 z-20">
-              <button
-                onClick={() => setActiveTab('admin')}
-                className="px-3 py-1.5 rounded-full bg-zinc-900 border border-white/10 text-[11px] font-bold text-yellow-400 hover:text-yellow-300 hover:border-yellow-400/30 transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <span>Staff CRM Panel</span> ➔
-              </button>
-            </div>
-
             {/* Logo & Brand Section */}
             <div className="flex flex-col items-center justify-center text-center pb-2 pt-6 w-full">
               {/* Premium geometric stylized Monogram */}
