@@ -1,16 +1,102 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Phone, MapPin, Clock, Flame, Award } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useOffer } from '../hooks/useOffer';
 import bumperImg from '../assets/images/neelkanth_hero_1783763725601.jpg';
 
 const PHONE_NUMBER = "+919963004478";
 const MAPS_URL = "https://share.google/Eb9hZf8VUOwKefX2c";
 
+// Custom, robust React/motion confetti that is completely immune to sandboxed canvas restrictions
+function BurstConfetti() {
+  const [particles, setParticles] = useState<{
+    id: number;
+    color: string;
+    size: number;
+    startX: string;
+    targetX: number;
+    targetY: number;
+    rotation: number;
+    delay: number;
+  }[]>([]);
+
+  useEffect(() => {
+    const colors = ['#E31E24', '#f59e0b', '#eab308', '#3b82f6', '#10b981', '#ec4899', '#ffffff'];
+    const list = Array.from({ length: 65 }).map((_, i) => {
+      const isLeft = i % 2 === 0;
+      const startX = isLeft ? '10%' : '90%';
+      
+      const angle = isLeft 
+        ? (Math.random() * 55 + 20) * (Math.PI / 180) // 20 to 75 deg
+        : (Math.random() * 55 + 105) * (Math.PI / 180); // 105 to 160 deg
+      const velocity = Math.random() * 320 + 180; // pixel distance
+      
+      const targetX = Math.cos(angle) * velocity;
+      const targetY = -Math.sin(angle) * velocity;
+      
+      return {
+        id: i,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 8 + 6,
+        startX,
+        targetX,
+        targetY,
+        rotation: Math.random() * 720 - 360,
+        delay: Math.random() * 0.15
+      };
+    });
+    setParticles(list);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[999999]">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          initial={{ 
+            opacity: 1, 
+            x: p.startX === '10%' ? '10vw' : '90vw', 
+            y: '95vh', 
+            scale: 0.7,
+            rotate: 0 
+          }}
+          animate={{
+            x: [
+              p.startX === '10%' ? '10vw' : '90vw',
+              `calc(${p.startX === '10%' ? '10vw' : '90vw'} + ${p.targetX}px)`
+            ],
+            y: [
+              '95vh',
+              `calc(95vh + ${p.targetY}px)`,
+              '110vh'
+            ],
+            opacity: [1, 1, 0.7, 0],
+            rotate: p.rotation,
+            scale: [0.7, 1.1, 0.5]
+          }}
+          transition={{
+            duration: 2.0 + Math.random() * 1.0,
+            delay: p.delay,
+            times: [0, 0.35, 1],
+            ease: [0.1, 0.8, 0.3, 1]
+          }}
+          className="absolute rounded-sm"
+          style={{
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            borderRadius: p.id % 3 === 0 ? '50%' : p.id % 3 === 1 ? '0%' : '3px 10px 4px'
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function OfferPopup() {
   const { activeOffer, config, loading } = useOffer();
   const [isOpen, setIsOpen] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // 1. Check visibility rules and localStorage based on popupBehavior config
@@ -24,36 +110,20 @@ export default function OfferPopup() {
       if (config.popupBehavior === 'once_24h' && lastShown) {
         const timePassed = now - parseInt(lastShown, 10);
         if (timePassed < 24 * 60 * 60 * 1000) {
-          // Already shown in last 24h
           setIsOpen(false);
           return;
         }
       }
       
-      // If we made it here, show the popup!
       setIsOpen(true);
       localStorage.setItem('neelakanta_bumper_popup_shown', now.toString());
 
-      // Trigger high-quality celebratory confetti bursts!
-      setTimeout(() => {
-        const duration = 2 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 25, spread: 360, ticks: 50, zIndex: 99999 };
-
-        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-        const interval = setInterval(() => {
-          const timeLeft = animationEnd - Date.now();
-
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
-
-          const particleCount = 50 * (timeLeft / duration);
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
-      }, 500);
+      // Trigger high-quality celebratory confetti burst
+      setShowConfetti(true);
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 6000);
+      return () => clearTimeout(timer);
     };
 
     checkPopupEligibility();
@@ -105,6 +175,7 @@ export default function OfferPopup() {
           WebkitBackdropFilter: 'blur(10px)'
         }}
       >
+        {showConfetti && <BurstConfetti />}
         {/* Modal content container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 25 }}
