@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Language, TranslationSet } from '../translations';
 import { useOffer } from '../hooks/useOffer';
+import { useAuth } from '../context/AuthContext';
 
 export interface Offer {
   id: string;
@@ -29,6 +30,10 @@ interface OffersPageProps {
 
 export default function OffersPage({ onClose, onBookClick, currentLanguage, t }: OffersPageProps) {
   const { offers: dbOffers } = useOffer();
+  const { isUser, isAdmin, loginUser } = useAuth();
+  const [loginPhone, setLoginPhone] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   
   // Referral inputs
@@ -120,6 +125,29 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
     window.open(url, '_blank');
   };
 
+  const handleUserLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setLoginError('');
+    const cleanPhone = loginPhone.replace(/\D/g, '').trim();
+    if (cleanPhone.length < 10) {
+      setLoginError(currentLanguage === 'hindi' ? 'कृपया वैध 10-अंकीय मोबाइल नंबर दर्ज करें।' : 'Please enter a valid 10-digit mobile number.');
+      setIsSubmitting(false);
+      return;
+    }
+    const success = await loginUser(cleanPhone);
+    setIsSubmitting(false);
+    if (!success) {
+      setLoginError(currentLanguage === 'hindi' ? 'लॉगिन विफल रहा।' : 'Login failed. Please try again.');
+    }
+  };
+
+  const handleQuickLogin = async () => {
+    setIsSubmitting(true);
+    await loginUser('9876543210');
+    setIsSubmitting(false);
+  };
+
   const bumperOffer = offers.find(o => o.isBumper);
   const regularOffers = offers.filter(o => !o.isBumper);
 
@@ -143,7 +171,11 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
       referPlaceholder: "Siddarth Kasuba",
       referCardTitle: "Your Unique Referral Invite",
       referCardDesc: "Copy and share this invite with friends on WhatsApp or social media!",
-      bookingCTA: "Apply Coupon & Book Now"
+      bookingCTA: "Apply Coupon & Book Now",
+      loginRequired: "🔒 CUSTOMER LOGIN REQUIRED",
+      loginDesc: "Unlock exclusive bumper deals, workshop promo codes, and referral bonuses by entering your registered mobile number.",
+      quickDemo: "⚡ Instant Quick Login (Demo Mode)",
+      enterMobilePlaceholder: "Enter your 10-digit mobile number..."
     },
     hindi: {
       title: "विशेष वर्कशॉप ऑफर्स",
@@ -163,7 +195,11 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
       referPlaceholder: "सिद्धार्थ कसुबा",
       referCardTitle: "आपका विशिष्ट रेफरल आमंत्रण",
       referCardDesc: "इसे कॉपी करें और व्हाट्सएप या सोशल मीडिया पर दोस्तों के साथ साझा करें!",
-      bookingCTA: "कूपन लागू करें और बुक करें"
+      bookingCTA: "कूपन लागू करें और बुक करें",
+      loginRequired: "🔒 ग्राहक लॉगिन आवश्यक",
+      loginDesc: "अपना पंजीकृत मोबाइल नंबर दर्ज करके विशेष बंपर सौदे, वर्कशॉप प्रोमो कोड और रेफरल बोनस अनलॉक करें।",
+      quickDemo: "⚡ त्वरित लॉगिन (डेमो मोड)",
+      enterMobilePlaceholder: "अपना 10-अंकीय मोबाइल नंबर दर्ज करें..."
     },
     telugu: {
       title: "ప్రత్యేక వర్క్‌షాప్ ఆఫర్లు",
@@ -183,7 +219,11 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
       referPlaceholder: "సిద్ధార్థ్ కసుబా",
       referCardTitle: "మీ ప్రత్యేక రెఫరల్ ఆహ్వానం",
       referCardDesc: "దీన్ని కాపీ చేసి వాట్సాప్ లేదా సోషల్ మీడియాలో స్నేహితులతో పంచుకోండి!",
-      bookingCTA: "కూపన్ వర్తింపజేసి ఇప్పుడే బుక్ చేయండి"
+      bookingCTA: "కూపన్ వర్తింపజేసి ఇప్పుడే బుక్ చేయండి",
+      loginRequired: "🔒 కస్టమర్ లాగిన్ అవసరం",
+      loginDesc: "మీ రిజిస్టర్డ్ మొబైల్ నంబర్‌ను నమోదు చేయడం ద్వారా ప్రత్యేక బంపర్ డీల్స్, వర్క్‌షాప్ ప్రోమో కోడ్‌లు మరియు రెఫరల్ బోనస్‌లను అన్‌లాక్ చేయండి.",
+      quickDemo: "⚡ త్వరిత లాగిన్ (డెమో మోడ్)",
+      enterMobilePlaceholder: "మీ 10-అంకెల మొబైల్ నంబర్‌ను నమోదు చేయండి..."
     }
   };
 
@@ -232,6 +272,78 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
       </div>
 
       {/* 2. BUMPER OFFER SECTION */}
+      {(!isUser && !isAdmin) ? (
+        <div className="max-w-md mx-auto mt-12 mb-16 bg-zinc-900 border border-white/10 p-8 rounded-sm shadow-2xl relative overflow-hidden">
+          {/* Accent lighting */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 via-amber-500 to-yellow-500" />
+          <div className="absolute -right-24 -bottom-24 w-48 h-48 bg-red-600/10 rounded-full blur-2xl" />
+
+          <div className="text-center space-y-6">
+            <div className="w-14 h-14 bg-red-650/15 rounded-full flex items-center justify-center mx-auto text-red-500 border border-red-500/10">
+              <Gift className="w-6 h-6 animate-pulse" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-black uppercase font-display italic text-white tracking-tight">
+                {localT.loginRequired}
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed font-sans max-w-sm mx-auto">
+                {localT.loginDesc}
+              </p>
+            </div>
+
+            <form onSubmit={handleUserLoginSubmit} className="space-y-4 text-left">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500">
+                  {currentLanguage === 'hindi' ? 'पंजीकृत मोबाइल नंबर' : 'REGISTERED MOBILE NUMBER'}
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <input
+                    type="tel"
+                    required
+                    value={loginPhone}
+                    onChange={(e) => setLoginPhone(e.target.value)}
+                    placeholder={localT.enterMobilePlaceholder}
+                    className="w-full bg-zinc-950 border border-white/5 text-white rounded-sm py-3 pl-11 pr-4 text-xs font-mono focus:outline-none focus:border-red-600 transition-all placeholder:text-zinc-700"
+                  />
+                </div>
+              </div>
+
+              {loginError && (
+                <div className="text-red-500 font-mono text-[11px] bg-red-950/20 border border-red-900/30 p-2.5 rounded-sm flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{loginError}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#E31E24] hover:bg-red-700 active:bg-red-800 disabled:bg-zinc-800 text-white font-black py-3 rounded-sm text-xs uppercase tracking-widest transition-all shadow-lg shadow-red-600/15 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>{isSubmitting ? (currentLanguage === 'hindi' ? 'प्रमाणित हो रहा है...' : 'AUTHENTICATING...') : (currentLanguage === 'hindi' ? 'डील अनलॉक करें 🔓' : 'UNLOCK OFFERS 🔓')}</span>
+              </button>
+            </form>
+
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-white/5"></div>
+              <span className="flex-shrink mx-4 text-[9px] font-mono font-bold tracking-widest text-zinc-600 uppercase">OR</span>
+              <div className="flex-grow border-t border-white/5"></div>
+            </div>
+
+            <button
+              onClick={handleQuickLogin}
+              disabled={isSubmitting}
+              className="w-full bg-zinc-950 border border-white/5 hover:border-white/10 hover:bg-zinc-900 text-zinc-400 hover:text-white font-mono text-[10px] font-black uppercase tracking-widest py-2.5 rounded-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+              <span>{localT.quickDemo}</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
       {bumperOffer && (
         <div className="mb-10 space-y-4">
           <h2 className="text-sm font-mono font-bold tracking-widest text-yellow-400 uppercase flex items-center gap-1.5">
@@ -573,6 +685,8 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
 
         </div>
       </div>
+      </>
+      )}
 
     </section>
   );
