@@ -1,0 +1,6 @@
+{
+  "name": "Neelakanta Motors",
+  "description": "Premium multi-brand car service center website featuring dynamic booking, service cards, and real-time appointment management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Elegant Dark Palette Overrides */
+  --color-zinc-950: #050505;
+  --color-red-600: #E31E24;
+  --color-yellow-400: #FFD700;
+}
+
+/* Custom Keyframe Animations for Automobile Theme Micro-interactions */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translate3d(0, 24px, 0); opacity: 0; }
+  to { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translate3d(0, -12px, 0); opacity: 0; }
+  to { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale3d(0.96, 0.96, 1); opacity: 0; }
+  to { transform: scale3d(1, 1, 1); opacity: 1; }
+}
+
+/* Custom utilities */
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hide scrollbars for categories sliding */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Global body optimizations */
+html {
+  scroll-behavior: smooth;
+  background-color: #f8fafc; /* Soft Off-White light automotive showroom base */
+}
+
+body {
+  color-scheme: light;
+}
+
+/* Realistic Carbon Fiber Pattern (Light Modern variant) */
+.bg-carbon-fiber {
+  background-color: #fdfdfd;
+  background-image: 
+    linear-gradient(45deg, #f1f5f9 25%, transparent 25%), 
+    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #f1f5f9 75%), 
+    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* Realistic Brushed Metal / High-Performance Detailing Studio Mesh (Light Modern variant) */
+.bg-metal-mesh {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 50% 50%, #e2e8f0 25%, transparent 26%),
+    radial-gradient(circle at 0% 0%, #e2e8f0 25%, transparent 26%),
+    radial-gradient(circle at 100% 0%, #e2e8f0 25%, transparent 26%),
+    radial-gradient(circle at 100% 100%, #e2e8f0 25%, transparent 26%),
+    radial-gradient(circle at 0% 100%, #e2e8f0 25%, transparent 26%);
+  background-size: 16px 16px;
+  background-position: 0px 0px, 8px 8px;
+}
+
+/* Volumetric Neon Glows adapted for Light theme contrast */
+.neon-glow-red {
+  background: radial-gradient(circle at 50% 50%, rgba(227, 30, 36, 0.04) 0%, transparent 70%);
+}
+
+.neon-glow-gold {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.04) 0%, transparent 70%);
+}
+
+.neon-glow-blue {
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+}
+
+/* Dynamic grid perspective lines matching a premium automotive studio */
+.perspective-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
