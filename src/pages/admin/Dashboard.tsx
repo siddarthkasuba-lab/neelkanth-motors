@@ -62,7 +62,7 @@ export default function AdminDashboard({ onClose }: DashboardProps) {
   // Sync / Listen to local storage changes to keep it in sync live
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'neelakanta_bookings' || e.key === 'neelkanth_bookings') {
+      if (!e.key || e.key === 'neelakanta_bookings' || e.key === 'neelkanth_bookings') {
         loadBookings();
       }
     };

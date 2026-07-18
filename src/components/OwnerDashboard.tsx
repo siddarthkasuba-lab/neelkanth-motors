@@ -455,31 +455,40 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   // Sync listener to monitor localStorage updates across tabs or pages in real time
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if ((e.key === 'neelakanta_bookings' || e.key === 'neelkanth_bookings') && e.newValue) {
+      // Handle bookings update
+      if (!e.key || e.key === 'neelakanta_bookings' || e.key === 'neelkanth_bookings') {
         try {
-          const newList = JSON.parse(e.newValue);
-          const oldList = e.oldValue ? JSON.parse(e.oldValue) : [];
+          const stored = localStorage.getItem('neelakanta_bookings') || localStorage.getItem('neelkanth_bookings');
+          const newList = stored ? JSON.parse(stored) : [];
           
-          // Always keep the list of bookings in state in sync (for updates, deletions, or additions)
-          setBookings(newList);
-
-          if (newList.length > oldList.length) {
-            // New booking added! Trigger alert
-            const addedItem = newList[0];
-            triggerAlert('booking', addedItem);
+          if (newList.length !== bookings.length) {
+            setBookings(newList);
+            if (newList.length > bookings.length) {
+              const addedItem = newList[0];
+              triggerAlert('booking', addedItem);
+            }
+          } else {
+            // Even if the length is same, contents might have changed (e.g. status updates)
+            setBookings(newList);
           }
         } catch (err) {
           console.error("Error reading updated bookings storage", err);
         }
       }
-      if ((e.key === 'neelakanta_referrals' || e.key === 'neelkanth_referrals') && e.newValue) {
+      
+      // Handle referrals update
+      if (!e.key || e.key === 'neelakanta_referrals' || e.key === 'neelkanth_referrals') {
         try {
-          const newList = JSON.parse(e.newValue);
-          const oldList = e.oldValue ? JSON.parse(e.oldValue) : [];
-          if (newList.length > oldList.length) {
-            // New referral generated! Trigger alert
-            const addedItem = newList[0];
-            triggerAlert('referral', addedItem);
+          const stored = localStorage.getItem('neelakanta_referrals') || localStorage.getItem('neelkanth_referrals');
+          const newList = stored ? JSON.parse(stored) : [];
+          
+          if (newList.length !== referrals.length) {
+            setReferrals(newList);
+            if (newList.length > referrals.length) {
+              const addedItem = newList[0];
+              triggerAlert('referral', addedItem);
+            }
+          } else {
             setReferrals(newList);
           }
         } catch (err) {
