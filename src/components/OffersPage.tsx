@@ -447,7 +447,7 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
         </h2>
 
         {regularOffers.length === 0 ? (
-          <div className="bg-zinc-900 border border-dashed border-white/5 p-6 rounded-sm text-center text-zinc-500 font-mono text-xs italic">
+          <div className="bg-zinc-900 border border-white/5 p-6 rounded-sm text-center text-zinc-500 font-mono text-xs italic">
             No regular promotions active at the moment. Please check back later.
           </div>
         ) : (
@@ -632,7 +632,7 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
                   </div>
 
                   {/* Coupon card UI mockup */}
-                  <div className="bg-zinc-900 border border-dashed border-green-500/20 rounded-md p-4 space-y-4 text-center">
+                  <div className="bg-zinc-900 border border-green-500/20 rounded-md p-4 space-y-4 text-center">
                     <span className="text-[9px] font-mono text-zinc-500 block uppercase font-bold tracking-widest">
                       NEELAKANTA REFERRAL DOCK
                     </span>
@@ -673,7 +673,7 @@ export default function OffersPage({ onClose, onBookClick, currentLanguage, t }:
                   </div>
                 </motion.div>
               ) : (
-                <div className="bg-zinc-950 border border-dashed border-white/5 rounded-lg p-10 text-center text-zinc-600 font-mono text-xs space-y-3 h-full flex flex-col items-center justify-center min-h-[300px]">
+                <div className="bg-zinc-950 border border-white/5 rounded-lg p-10 text-center text-zinc-600 font-mono text-xs space-y-3 h-full flex flex-col items-center justify-center min-h-[300px]">
                   <Gift className="w-10 h-10 text-zinc-800 animate-bounce" />
                   <p className="max-w-xs leading-relaxed uppercase tracking-wider text-[10px]">
                     No referral code created yet. Submit your name and phone in the form to generate your flat 5% shareable discount ticket.

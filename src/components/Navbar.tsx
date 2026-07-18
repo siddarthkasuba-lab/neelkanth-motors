@@ -62,18 +62,19 @@ export default function Navbar({
           
           {/* Logo & Brand */}
           <div
-            className="flex items-center space-x-3 cursor-pointer"
+            className="flex items-center space-x-2 sm:space-x-3 cursor-pointer select-none shrink-0"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="w-10 h-10 bg-[#E31E24] rounded-sm flex items-center justify-center font-black text-white italic text-xl shadow-lg shadow-red-650/10">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#E31E24] rounded-sm flex items-center justify-center font-black text-white italic text-lg sm:text-xl shadow-lg shadow-red-650/10 shrink-0">
               NM
             </div>
             <div>
-              <div className="text-zinc-900 font-black tracking-tighter text-lg sm:text-xl font-sans uppercase italic flex items-center gap-1.5">
-                NEELAKANTA <span className="text-[#E31E24]">MOTORS</span>
-                <Award className="w-4 h-4 text-amber-500 animate-pulse" />
+              <div className="text-zinc-900 font-black tracking-tighter text-sm min-[360px]:text-base sm:text-xl font-sans uppercase italic flex items-center gap-1 sm:gap-1.5 leading-none">
+                <span className="inline">NEELAKANTA</span>
+                <span className="text-[#E31E24] hidden min-[400px]:inline"> MOTORS</span>
+                <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 animate-pulse shrink-0" />
               </div>
-              <div className="text-zinc-400 font-mono text-[9px] tracking-widest uppercase font-bold leading-none">
+              <div className="text-zinc-400 font-mono text-[8px] tracking-widest uppercase font-bold leading-none mt-1 hidden sm:block">
                 {BUSINESS_INFO.tagline}
               </div>
             </div>
@@ -260,7 +261,7 @@ export default function Navbar({
           </div>
 
           {/* Mobile Menu Button & Toggles */}
-          <div className="flex items-center space-x-2 lg:hidden">
+          <div className="flex items-center space-x-1 sm:space-x-1.5 lg:hidden shrink-0">
             
             {/* Quick Language Cycle button on Mobile */}
             <button
@@ -272,11 +273,11 @@ export default function Navbar({
                 };
                 onLanguageChange(nextLangMap[currentLanguage]);
               }}
-              className="p-2 rounded-sm bg-zinc-100 border border-zinc-200 text-red-600 font-mono text-[10px] font-bold flex items-center gap-1"
+              className="p-1.5 sm:p-2 rounded-sm bg-zinc-100 border border-zinc-200/60 text-red-600 font-mono text-[10px] font-bold flex items-center gap-0.5 sm:gap-1"
               title="Cycle Language"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>
+              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-[9px] sm:text-[10px]">
                 {currentLanguage === 'english' ? 'EN' : currentLanguage === 'hindi' ? 'हिं' : 'తె'}
               </span>
             </button>
@@ -288,34 +289,214 @@ export default function Navbar({
                   await logout();
                   onPageChange('home');
                 }}
-                className="px-2 py-1 rounded-sm bg-red-600 border border-red-500 text-white font-black text-[9px] uppercase font-mono tracking-wider transition-all flex items-center gap-1 shrink-0 animate-pulse"
+                className="px-1.5 py-1 sm:px-2 sm:py-1 rounded-sm bg-red-600 border border-red-500 text-white font-black text-[9px] uppercase font-mono tracking-wider transition-all flex items-center gap-1 shrink-0 animate-pulse"
                 title="Logout"
               >
-                <LogOut className="w-3 h-3" />
-                <span>LOGOUT</span>
+                <LogOut className="w-3 h-3 shrink-0" />
+                <span className="hidden min-[380px]:inline">LOGOUT</span>
               </button>
             )}
 
             <button
               onClick={() => onPageChange(activePage === 'user-portal' ? 'home' : 'user-portal')}
-              className={`p-2 rounded-sm border text-xs flex items-center gap-1 transition-all ${
+              className={`p-1.5 sm:p-2 rounded-sm border text-xs flex items-center gap-1 transition-all ${
                 activePage === 'user-portal'
                   ? 'bg-[#E31E24]/20 border-[#E31E24] text-[#E31E24]'
                   : 'bg-zinc-100 border-zinc-200 text-zinc-600'
               }`}
               title="Track Booking"
             >
-              <ClipboardList className="w-3.5 h-3.5" />
+              <ClipboardList className="w-3.5 h-3.5 shrink-0" />
             </button>
 
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-sm bg-zinc-100 border border-zinc-200 text-zinc-700 hover:text-zinc-900 focus:outline-none"
+              className="p-1.5 sm:p-2 rounded-sm bg-zinc-100 border border-zinc-200/60 text-zinc-700 hover:text-zinc-900 focus:outline-none"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Quick Horizontal Scrollable Category Bar - Showing all options directly on top */}
+      <div 
+        className="lg:hidden bg-zinc-50 border-t border-zinc-200/50 px-3 py-1.5 overflow-x-auto scrollbar-none flex items-center space-x-1.5 whitespace-nowrap"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        <a
+          href="#about"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('about');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('about');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.about}</span>
+        </a>
+        <a
+          href="#brands"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('brands');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('brands');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.brands}</span>
+        </a>
+        <a
+          href="#services"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('services');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('services');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.services}</span>
+        </a>
+        <button
+          onClick={() => onPageChange('offers')}
+          className={`px-2.5 py-1 rounded-sm text-[10px] font-black uppercase tracking-wider transition-all inline-flex items-center gap-1 shrink-0 border ${
+            activePage === 'offers'
+              ? 'bg-red-600 border-red-600 text-white shadow-sm'
+              : 'bg-red-500/10 border-red-500/20 text-red-600'
+          }`}
+        >
+          <span>🎉 {currentLanguage === 'hindi' ? 'ऑफ़र' : currentLanguage === 'telugu' ? 'ఆఫర్లు' : 'Offers'}</span>
+        </button>
+        <a
+          href="#why-choose-us"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('why-choose-us');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('why-choose-us');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.whyUs}</span>
+        </a>
+        <a
+          href="#gallery"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('gallery');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('gallery');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.gallery}</span>
+        </a>
+        <a
+          href="#reviews"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('reviews');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('reviews');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.reviews}</span>
+        </a>
+        <a
+          href="#faq"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('faq');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('faq');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.faq}</span>
+        </a>
+        <a
+          href="#contact"
+          onClick={(e) => {
+            if (activePage !== 'home') {
+              e.preventDefault();
+              onPageChange('home');
+              setTimeout(() => {
+                const el = document.getElementById('contact');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            } else {
+              e.preventDefault();
+              const el = document.getElementById('contact');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="px-2.5 py-1 bg-white border border-zinc-200/80 rounded-sm text-[10px] font-bold uppercase tracking-wider text-zinc-600 active:text-red-600 active:bg-zinc-100 transition-all inline-flex items-center gap-1 shrink-0"
+        >
+          <span>{t.contact}</span>
+        </a>
       </div>
 
       {/* Mobile Drawer */}

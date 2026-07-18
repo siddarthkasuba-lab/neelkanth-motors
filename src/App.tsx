@@ -18,8 +18,10 @@ import FloatingLocationButton from './components/FloatingLocationButton';
 import OfferPopup from './components/OfferPopup';
 import { BUSINESS_INFO } from './data';
 import { Language, TRANSLATIONS } from './translations';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
+  const { isUser, isAdmin, loading } = useAuth();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [activePage, setActivePage] = useState<'home' | 'user-portal' | 'admin-portal' | 'offers'>('home');
   const [language, setLanguage] = useState<Language>('english');
@@ -49,6 +51,31 @@ export default function App() {
       }
     }, 100);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center font-sans text-white">
+        <div className="w-16 h-16 bg-red-600 rounded-sm flex items-center justify-center font-black italic text-white text-2xl shadow-xl animate-pulse mb-4">
+          NM
+        </div>
+        <div className="flex items-center gap-2 text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">
+          <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+          <span>Securing Garage Gate...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isUser && !isAdmin) {
+    return (
+      <OwnerDashboard 
+        onClose={() => {}} 
+        t={t} 
+        currentLanguage={language} 
+        initialTab="user"
+      />
+    );
+  }
 
   return (
     <div id="app-root" className="min-h-screen bg-[#f8fafc] text-zinc-800 font-sans selection:bg-red-600 selection:text-white overflow-x-hidden antialiased scroll-smooth relative">

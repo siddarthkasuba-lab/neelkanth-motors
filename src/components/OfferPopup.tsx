@@ -7,96 +7,9 @@ import bumperImg from '../assets/images/neelkanth_hero_1783763725601.jpg';
 const PHONE_NUMBER = "+919963004478";
 const MAPS_URL = "https://share.google/Eb9hZf8VUOwKefX2c";
 
-// Custom, robust React/motion confetti that is completely immune to sandboxed canvas restrictions
-function BurstConfetti() {
-  const [particles, setParticles] = useState<{
-    id: number;
-    color: string;
-    size: number;
-    startX: string;
-    targetX: number;
-    targetY: number;
-    rotation: number;
-    delay: number;
-  }[]>([]);
-
-  useEffect(() => {
-    const colors = ['#E31E24', '#f59e0b', '#eab308', '#3b82f6', '#10b981', '#ec4899', '#ffffff'];
-    const list = Array.from({ length: 65 }).map((_, i) => {
-      const isLeft = i % 2 === 0;
-      const startX = isLeft ? '10%' : '90%';
-      
-      const angle = isLeft 
-        ? (Math.random() * 55 + 20) * (Math.PI / 180) // 20 to 75 deg
-        : (Math.random() * 55 + 105) * (Math.PI / 180); // 105 to 160 deg
-      const velocity = Math.random() * 320 + 180; // pixel distance
-      
-      const targetX = Math.cos(angle) * velocity;
-      const targetY = -Math.sin(angle) * velocity;
-      
-      return {
-        id: i,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        size: Math.random() * 8 + 6,
-        startX,
-        targetX,
-        targetY,
-        rotation: Math.random() * 720 - 360,
-        delay: Math.random() * 0.15
-      };
-    });
-    setParticles(list);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[999999]">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          initial={{ 
-            opacity: 1, 
-            x: p.startX === '10%' ? '10vw' : '90vw', 
-            y: '95vh', 
-            scale: 0.7,
-            rotate: 0 
-          }}
-          animate={{
-            x: [
-              p.startX === '10%' ? '10vw' : '90vw',
-              `calc(${p.startX === '10%' ? '10vw' : '90vw'} + ${p.targetX}px)`
-            ],
-            y: [
-              '95vh',
-              `calc(95vh + ${p.targetY}px)`,
-              '110vh'
-            ],
-            opacity: [1, 1, 0.7, 0],
-            rotate: p.rotation,
-            scale: [0.7, 1.1, 0.5]
-          }}
-          transition={{
-            duration: 2.0 + Math.random() * 1.0,
-            delay: p.delay,
-            times: [0, 0.35, 1],
-            ease: [0.1, 0.8, 0.3, 1]
-          }}
-          className="absolute rounded-sm"
-          style={{
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            borderRadius: p.id % 3 === 0 ? '50%' : p.id % 3 === 1 ? '0%' : '3px 10px 4px'
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function OfferPopup() {
   const { activeOffer, config, loading } = useOffer();
   const [isOpen, setIsOpen] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // 1. Check visibility rules and localStorage based on popupBehavior config
@@ -117,13 +30,6 @@ export default function OfferPopup() {
       
       setIsOpen(true);
       localStorage.setItem('neelakanta_bumper_popup_shown', now.toString());
-
-      // Trigger high-quality celebratory confetti burst
-      setShowConfetti(true);
-      const timer = setTimeout(() => {
-        setShowConfetti(false);
-      }, 6000);
-      return () => clearTimeout(timer);
     };
 
     checkPopupEligibility();
@@ -169,57 +75,56 @@ export default function OfferPopup() {
             setIsOpen(false);
           }
         }}
-        className="fixed inset-0 z-[99999] flex items-center justify-center p-4 overflow-y-auto bg-black/85"
+        className="fixed inset-0 z-[99999] flex items-center justify-center p-4 overflow-y-auto bg-black/90"
         style={{
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)'
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)'
         }}
       >
-        {showConfetti && <BurstConfetti />}
-        {/* Modal content container */}
+        {/* Modal content container - Beautiful, premium dark metal/gold dashboard theme */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 25 }}
+          initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.92, y: 25 }}
+          exit={{ opacity: 0, scale: 0.94, y: 20 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-[400px] bg-white border border-zinc-200 rounded-sm overflow-hidden shadow-2xl z-50 font-sans my-6"
+          className="relative w-full max-w-[400px] bg-zinc-950 border border-white/10 rounded-sm overflow-hidden shadow-2xl z-50 font-sans my-6 text-white"
         >
-          {/* Flame / Sparkle top-line accent */}
-          <div className="h-1 bg-gradient-to-r from-red-600 via-yellow-400 to-red-600 w-full" />
+          {/* Flame / Gold top-line accent */}
+          <div className="h-[2px] bg-gradient-to-r from-red-600 via-yellow-400 to-red-600 w-full" />
 
           {/* Close button */}
           <button
             onClick={() => setIsOpen(false)}
-            className="absolute top-3 right-3 z-20 p-1.5 bg-white/90 hover:bg-red-50 text-zinc-700 hover:text-red-600 rounded-sm border border-zinc-200 transition-all cursor-pointer shadow-md"
+            className="absolute top-3 right-3 z-20 p-1.5 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-sm border border-white/5 transition-all cursor-pointer shadow-md"
             title="Close offer popup"
           >
             <X className="w-3.5 h-3.5" />
           </button>
 
           {/* Banner Image / Fallback Container */}
-          <div className="relative h-36 w-full bg-zinc-50 overflow-hidden">
+          <div className="relative h-36 w-full bg-zinc-900 overflow-hidden">
             {activeOffer.isBumper || activeOffer.id === "OFF-BUMP-01" ? (
               <img
                 src={activeOffer.image && activeOffer.image.startsWith('data:image') ? activeOffer.image : bumperImg}
                 alt={activeOffer.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover opacity-85"
               />
             ) : activeOffer.image ? (
               <img
                 src={activeOffer.image}
                 alt={activeOffer.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover opacity-85"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-red-50 to-zinc-100 flex items-center justify-center">
-                <Award className="w-12 h-12 text-red-600 animate-pulse" />
+              <div className="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-950 flex items-center justify-center">
+                <Award className="w-12 h-12 text-red-500 animate-pulse" />
               </div>
             )}
             
             {/* Dark gradient overlay on image */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
             {/* Float Badges */}
             <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
@@ -227,7 +132,7 @@ export default function OfferPopup() {
                 <Flame className="w-2.5 h-2.5 text-yellow-300 animate-bounce" />
                 <span>Limited Time</span>
               </span>
-              <span className="bg-yellow-400 text-black font-black text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-md font-mono">
+              <span className="bg-yellow-500 text-black font-black text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-md font-mono">
                 BUMPER SPECIAL
               </span>
             </div>
@@ -238,55 +143,55 @@ export default function OfferPopup() {
             
             {/* Header announcement */}
             <div className="space-y-0.5">
-              <span className="text-red-600 font-mono text-[9px] font-black uppercase tracking-[0.2em] block">
+              <span className="text-yellow-400 font-mono text-[9px] font-black uppercase tracking-[0.2em] block">
                 🎉 EXCLUSIVE WORKSHOP OFFER 🎉
               </span>
-              <h2 className="text-lg font-black text-zinc-900 uppercase italic tracking-tight font-display leading-snug">
+              <h2 className="text-lg font-black text-white uppercase italic tracking-tight font-display leading-snug">
                 {activeOffer.title}
               </h2>
             </div>
 
-            {/* Offer price block */}
-            <div className="bg-zinc-50 border border-zinc-200 rounded-sm p-3 flex items-center justify-between gap-3">
+            {/* Offer price block - Shifted to solid dark modern layout */}
+            <div className="bg-zinc-900 border border-white/5 rounded-sm p-3 flex items-center justify-between gap-3">
               <div>
                 <span className="text-zinc-500 font-mono text-[8px] uppercase font-bold block">SPECIAL BENEFIT PRICE</span>
-                <span className="text-2xl font-black font-mono text-red-600 tracking-tighter block">{activeOffer.price}</span>
+                <span className="text-2xl font-black font-mono text-yellow-400 tracking-tighter block">{activeOffer.price}</span>
               </div>
-              <div className="bg-green-50 border border-green-200 px-2 py-1 rounded-sm">
-                <span className="text-green-700 font-mono text-[10px] font-black uppercase tracking-wider">SAVE MASSIVE</span>
+              <div className="bg-yellow-400/10 border border-yellow-400/20 px-2 py-1 rounded-sm">
+                <span className="text-yellow-400 font-mono text-[10px] font-black uppercase tracking-wider">SAVE MASSIVE</span>
               </div>
             </div>
 
             {/* Description */}
-            <p className="text-zinc-600 text-xs leading-relaxed font-sans font-medium">
+            <p className="text-zinc-400 text-xs leading-relaxed font-sans font-medium">
               {activeOffer.description}
             </p>
 
-            {/* Countdown Expiry Box */}
-            <div className="bg-red-50/40 border border-dashed border-red-500/25 p-3 rounded-sm space-y-2">
-              <div className="flex items-center gap-1.5 text-red-600 font-mono text-[9px] font-bold uppercase tracking-wider">
+            {/* Countdown Expiry Box - No dashed border, solid high-contrast elements */}
+            <div className="bg-zinc-900 border border-white/5 p-3 rounded-sm space-y-2">
+              <div className="flex items-center gap-1.5 text-red-500 font-mono text-[9px] font-bold uppercase tracking-wider">
                 <Clock className="w-3 h-3 animate-spin-slow" />
                 <span>OFFER EXPIRES IN</span>
               </div>
               
               <div className="grid grid-cols-4 gap-1.5 text-center font-mono">
-                <div className="bg-white p-1.5 border border-zinc-200 rounded-sm">
-                  <span className="text-base font-black text-zinc-900 block">{timeLeft.days}</span>
+                <div className="bg-zinc-950 p-1.5 border border-white/5 rounded-sm">
+                  <span className="text-base font-black text-white block">{timeLeft.days}</span>
                   <span className="text-[7px] text-zinc-500 uppercase font-bold tracking-widest block">DAYS</span>
                 </div>
-                <div className="bg-white p-1.5 border border-zinc-200 rounded-sm">
-                  <span className="text-base font-black text-zinc-900 block">
+                <div className="bg-zinc-950 p-1.5 border border-white/5 rounded-sm">
+                  <span className="text-base font-black text-white block">
                     {String(timeLeft.hours).padStart(2, '0')}
                   </span>
                   <span className="text-[7px] text-zinc-500 uppercase font-bold tracking-widest block">HOURS</span>
                 </div>
-                <div className="bg-white p-1.5 border border-zinc-200 rounded-sm">
-                  <span className="text-base font-black text-zinc-900 block">
+                <div className="bg-zinc-950 p-1.5 border border-white/5 rounded-sm">
+                  <span className="text-base font-black text-white block">
                     {String(timeLeft.minutes).padStart(2, '0')}
                   </span>
                   <span className="text-[7px] text-zinc-500 uppercase font-bold tracking-widest block">MINS</span>
                 </div>
-                <div className="bg-white p-1.5 border border-zinc-200 rounded-sm text-red-600">
+                <div className="bg-zinc-950 p-1.5 border border-white/5 rounded-sm text-red-500">
                   <span className="text-base font-black block animate-pulse">
                     {String(timeLeft.seconds).padStart(2, '0')}
                   </span>
@@ -299,7 +204,7 @@ export default function OfferPopup() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
               <a
                 href={`tel:${PHONE_NUMBER}`}
-                className="bg-zinc-900 hover:bg-zinc-800 border border-transparent text-white font-mono text-[10px] font-bold uppercase tracking-wider py-2.5 px-3 rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md"
+                className="bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-white font-mono text-[10px] font-bold uppercase tracking-wider py-2.5 px-3 rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md"
               >
                 <Phone className="w-3.5 h-3.5 text-red-500 animate-pulse" />
                 <span>Call Workshop</span>

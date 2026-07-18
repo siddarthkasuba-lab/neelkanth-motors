@@ -3,7 +3,7 @@ import {
   Lock, Unlock, ShieldAlert, Check, X, Trash2,
   Search, Calendar, Phone, Car, Users, RefreshCw, Star,
   LogOut, ClipboardList, Clock, CheckCircle2, AlertTriangle, ArrowLeft,
-  Bell, Volume2, Sparkles, UserCheck
+  Bell, Volume2, Sparkles, UserCheck, ShieldCheck, ChevronDown, ArrowRight
 } from 'lucide-react';
 import { Booking } from '../types';
 import { SERVICES, BUSINESS_INFO } from '../data';
@@ -603,322 +603,392 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
       {/* Background accents */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/5 blur-3xl rounded-full" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-500/5 blur-3xl rounded-full" />
+      
+      {/* Laser-style bright red diagonal neon glowing accents */}
+      <div className="absolute left-[-50px] top-[15%] w-1.5 h-64 bg-red-600 rotate-[35deg] blur-[1px] shadow-[0_0_20px_#e31e24] opacity-75 hidden md:block" />
+      <div className="absolute right-[-50px] top-[25%] w-1.5 h-64 bg-red-600 -rotate-[35deg] blur-[1px] shadow-[0_0_20px_#e31e24] opacity-75 hidden md:block" />
+      <div className="absolute left-[-20px] top-[10%] w-1 h-32 bg-red-600 rotate-[40deg] blur-[2px] shadow-[0_0_12px_#e31e24] opacity-50 block md:hidden" />
+      <div className="absolute right-[-20px] top-[20%] w-1 h-32 bg-red-600 -rotate-[40deg] blur-[2px] shadow-[0_0_12px_#e31e24] opacity-50 block md:hidden" />
 
       {/* 1. DUAL LOGIN AUTH GATE SCREEN */}
-      {!isAdminAuthenticated && !isUserAuthenticated ? (
+      {(activeTab === 'user' && !isUserAuthenticated) || (activeTab === 'admin' && !isAdminAuthenticated) ? (
         activeTab === 'user' ? (
           /* DEDICATED USER LOGIN PAGE */
-          <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-6xl w-full mx-auto animate-fadeIn">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
-              
-              {/* Left Column: Visual Diagnostic Steps Mockup */}
-              <div className="lg:col-span-6 space-y-6 text-left hidden lg:block">
-                <div className="space-y-3">
-                  <span className="bg-red-600/15 text-red-400 border border-red-500/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest font-mono">
-                    {currentLanguage === 'hindi' ? 'वास्तविक समय ट्रैकिंग' : currentLanguage === 'telugu' ? 'రియల్ టైమ్ ట్రాకింగ్' : 'Live Repair Tracker'}
-                  </span>
-                  <h2 className="text-3xl xl:text-4xl font-black text-white uppercase tracking-tight italic font-display leading-tight">
-                    {currentLanguage === 'hindi' ? 'अपनी कार की मरम्मत स्थिति ट्रैक करें' : currentLanguage === 'telugu' ? 'మీ కారు రిపేర్ స్థితిని ట్రాక్ చేయండి' : 'Track Your Vehicle Status in Real-Time'}
-                  </h2>
-                  <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
-                    {currentLanguage === 'hindi' 
-                      ? 'नीलकंठ मोटर्स हैदराबाद आपके लिए संपूर्ण पारदर्शिता लाता है। अपनी कार का लाइव अपडेट, बिलिंग रसीदें और वेणु के मैकेनिक फीडबैक देखने के लिए लॉगिन करें।' 
-                      : currentLanguage === 'telugu' 
-                      ? 'నీలకంఠ మోటార్స్ హైదరాబాద్ మీ ముందుకు సంపూర్ణ పారదర్శకతను తెస్తుంది. మీ కారు లైవ్ అప్‌డేట్‌లు మరియు బిల్లింగ్ రసీదులు చూడటానికి లాగిన్ అవ్వండి.' 
-                      : 'Neelkanth Motors Hyderabad brings ultimate transparency. Log in with your registered mobile number to check diagnostic states, replacement spare lists, and live technician notes.'}
-                  </p>
-                </div>
-
-                {/* Status Visual Tracker Mockup */}
-                <div className="bg-zinc-900 border border-white/5 rounded-sm p-6 space-y-4">
-                  <span className="text-zinc-500 text-[10px] font-bold tracking-widest uppercase font-mono block">DIAGNOSTIC PIPELINE EXAMPLE</span>
-                  
-                  <div className="space-y-4 relative pl-6">
-                    {/* Vertical pipeline line */}
-                    <div className="absolute left-[9px] top-2 bottom-2 w-[2px] bg-red-600" />
-                    
-                    {/* Active Step */}
-                    <div className="relative flex gap-3.5 items-start">
-                      <div className="w-5 h-5 rounded-full bg-red-600 border border-red-500 flex items-center justify-center relative z-10 text-white font-black text-[9px]">
-                        ✓
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black uppercase tracking-wider text-white">1. VEHICLE IN-TAKED</h4>
-                        <p className="text-[10px] text-zinc-500 font-mono">Completed: Inspection sheets logged</p>
-                      </div>
-                    </div>
-
-                    {/* Active Step */}
-                    <div className="relative flex gap-3.5 items-start">
-                      <div className="w-5 h-5 rounded-full bg-red-600 border border-red-500 flex items-center justify-center relative z-10 text-white font-black text-[9px] animate-pulse">
-                        ⚡
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black uppercase tracking-wider text-red-500">2. FAULT IDENTIFICATION</h4>
-                        <p className="text-[10px] text-zinc-400 font-mono">Underway: Running computerized OBD diagnostics</p>
-                      </div>
-                    </div>
-
-                    {/* Future Step */}
-                    <div className="relative flex gap-3.5 items-start opacity-40">
-                      <div className="w-5 h-5 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center relative z-10 text-zinc-500 text-[9px]">
-                        3
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400">3. PREMIUM REPAIRS & REPAINTS</h4>
-                        <p className="text-[10px] text-zinc-500 font-mono">Pending allocation in bay 4</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick stats badges */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-zinc-900/60 border border-white/5 p-3 rounded-sm text-center">
-                    <span className="text-red-500 font-mono font-black text-sm block">15+</span>
-                    <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mt-0.5">Years Trust</span>
-                  </div>
-                  <div className="bg-zinc-900/60 border border-white/5 p-3 rounded-sm text-center">
-                    <span className="text-white font-mono font-black text-sm block">100%</span>
-                    <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mt-0.5">OES Spares</span>
-                  </div>
-                  <div className="bg-zinc-900/60 border border-white/5 p-3 rounded-sm text-center">
-                    <span className="text-yellow-400 font-mono font-black text-sm block">12,000+</span>
-                    <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mt-0.5">Cars Serviced</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Portal Login Card */}
-              <div className="lg:col-span-6 w-full max-w-md mx-auto">
-                <div className="bg-zinc-900 border border-white/10 rounded-sm shadow-2xl overflow-hidden text-left">
-                  {/* Header branding */}
-                  <div className="bg-zinc-950 p-6 border-b border-white/5 text-center relative">
-                    <button 
-                      onClick={onClose} 
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-sm bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer"
-                      title="Back to website"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                    </button>
-
-                    <div className="w-12 h-12 bg-red-600 rounded-sm flex items-center justify-center font-black italic text-white text-xl mx-auto shadow-md mb-3">
-                      NM
-                    </div>
-                    <h3 className="text-lg font-black text-white uppercase tracking-wider italic font-display leading-tight">
-                      {t.userLoginTitle}
-                    </h3>
-                    <p className="text-xs text-zinc-500 mt-1 uppercase tracking-widest font-mono">
-                      {currentLanguage === 'hindi' ? 'सुरक्षित ग्राहक लॉगिन' : currentLanguage === 'telugu' ? 'సురక్షిత కస్టమర్ లాగిన్' : 'Secure Client Entrance'}
-                    </p>
-                  </div>
-
-                  {/* Inner form */}
-                  <div className="p-8 space-y-6">
-                    <div className="space-y-2">
-                      <p className="text-xs text-zinc-400 leading-relaxed">
-                        {t.userLoginDesc}
-                      </p>
-                      <div className="bg-red-600/10 border border-red-600/20 rounded-sm p-3 text-[11px] text-red-400 font-mono">
-                        {currentLanguage === 'hindi' 
-                          ? '💡 सुझाव: परीक्षण के लिए "9963004478" का उपयोग करें जिसमें सक्रिय बुकिंग शामिल है।' 
-                          : currentLanguage === 'telugu' 
-                          ? '💡 సూచన: క్రియాశీల బుకింగ్ కలిగిన "9963004478" మొబైల్ నెంబర్ ఉపయోగించండి.' 
-                          : '💡 Demo: Try using "9963004478" (Siddarth) to view an active ticket simulation.'}
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleUserLogin} className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono block">
-                          {t.mobileNumber}
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          value={userPhone}
-                          onChange={(e) => setUserPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                          placeholder={t.enterMobile}
-                          className="w-full bg-zinc-950 border border-white/10 rounded-sm py-3.5 px-4 text-sm font-mono tracking-widest focus:outline-none focus:border-red-600 transition-all text-white placeholder:text-zinc-600"
-                          maxLength={10}
-                        />
-                      </div>
-
-                      {userError && <p className="text-xs text-red-500 font-mono text-center">{userError}</p>}
-
-                      <button
-                        type="submit"
-                        className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-sm text-xs uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/10 hover:shadow-red-600/20"
-                      >
-                        <ClipboardList className="w-3.5 h-3.5" />
-                        <span>{t.loginButton}</span>
-                      </button>
-                    </form>
-
-                    <div className="pt-4 border-t border-white/5 flex flex-col items-center gap-2">
-                      <button
-                        onClick={() => setActiveTab('admin')}
-                        className="text-xs font-mono text-yellow-400 hover:text-yellow-300 transition-colors flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>{currentLanguage === 'hindi' ? 'मालिक लॉगिन पैनल पर जाएं' : currentLanguage === 'telugu' ? 'ఓనర్ లాగిన్ ప్యానెల్ వెళ్ళండి' : 'Are you Workshop Staff? Go to Owner CRM'} ➔</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+          <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-xl w-full mx-auto animate-fadeIn">
+            {/* Top right staff toggle switch */}
+            <div className="absolute top-0 right-0 z-20">
+              <button
+                onClick={() => setActiveTab('admin')}
+                className="px-3 py-1.5 rounded-full bg-zinc-900 border border-white/10 text-[11px] font-bold text-yellow-400 hover:text-yellow-300 hover:border-yellow-400/30 transition-all flex items-center gap-1 cursor-pointer"
+              >
+                <span>Staff CRM Panel</span> ➔
+              </button>
             </div>
+
+            {/* Logo & Brand Section */}
+            <div className="flex flex-col items-center justify-center text-center pb-2 pt-6 w-full">
+              {/* Premium geometric stylized Monogram */}
+              <div className="flex items-center justify-center mb-1">
+                <svg className="h-16 w-auto filter drop-shadow-[0_0_20px_rgba(227,30,36,0.25)] select-none" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Stylized White N */}
+                  <path d="M38 45 V15 L46 11 V41 Z" fill="white" />
+                  <path d="M46 11 L62 29 L55 33 L39 15 Z" fill="white" />
+                  {/* Stylized Red M */}
+                  <path d="M58 17 L72 33 L65 37 L51 21 Z" fill="#E31E24" />
+                  <path d="M72 33 L86 11 L93 15 L79 37 Z" fill="#E31E24" />
+                  <path d="M86 11 L93 15 V45 L86 41 Z" fill="#E31E24" />
+                </svg>
+              </div>
+
+              {/* NEELAKANTA Heading */}
+              <h1 className="text-white font-extrabold tracking-[0.16em] text-2xl sm:text-3xl font-sans uppercase">
+                NEELAKANTA
+              </h1>
+
+              {/* MOTORS sub-heading with double line divider */}
+              <div className="flex items-center justify-center gap-3.5 w-full mt-1.5 px-6">
+                <div className="h-[1.5px] flex-1 max-w-[60px] bg-[#E31E24]" />
+                <span className="text-[#E31E24] font-extrabold tracking-[0.25em] text-xs sm:text-sm">MOTORS</span>
+                <div className="h-[1.5px] flex-1 max-w-[60px] bg-[#E31E24]" />
+              </div>
+            </div>
+
+            {/* Sleek Premium Car Silhouette */}
+            <div className="w-full max-w-[340px] sm:max-w-[400px] mx-auto -mt-2 -mb-2 relative">
+              <svg className="w-full h-auto mx-auto select-none filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Ground reflection & shadows */}
+                <ellipse cx="200" cy="164" rx="150" ry="10" fill="rgba(0,0,0,0.9)" filter="blur(6px)" />
+                <ellipse cx="100" cy="161" rx="35" ry="3" fill="rgba(0,0,0,0.6)" filter="blur(3px)" />
+                <ellipse cx="300" cy="161" rx="35" ry="3" fill="rgba(0,0,0,0.6)" filter="blur(3px)" />
+
+                {/* Car body silhouette front view */}
+                {/* Roof and windshield */}
+                <path d="M145 45 C155 35, 175 30, 200 30 C225 30, 245 35, 255 45 C270 58, 285 75, 292 88 C295 93, 290 94, 285 94 C260 94, 140 94, 115 94 C110 94, 105 93, 108 88 C115 75, 130 58, 145 45 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+                {/* Windshield glass highlight / reflection */}
+                <path d="M152 48 C162 40, 180 36, 200 36 C220 36, 238 40, 248 48 C260 59, 272 74, 278 84 C255 86, 145 86, 122 84 C128 74, 140 59, 152 48 Z" fill="url(#windshield-grad)" opacity="0.15" />
+
+                {/* Side mirrors */}
+                <path d="M102 86 C90 85, 75 88, 70 93 C68 95, 70 98, 78 98 C88 98, 98 94, 104 90 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+                <path d="M298 86 C310 85, 325 88, 330 93 C332 95, 330 98, 322 98 C312 98, 302 94, 296 90 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+
+                {/* Main Bonnet / Hood */}
+                <path d="M102 92 C120 92, 280 92, 298 92 C312 92, 328 100, 338 112 C345 120, 348 128, 346 134 C342 144, 325 146, 310 148 C280 151, 120 151, 90 148 C75 146, 58 144, 54 134 C52 128, 55 120, 62 112 C72 100, 88 92, 102 92 Z" fill="#0c0c0f" stroke="#22222a" strokeWidth="1.2" />
+
+                {/* Bonnet Crease Lines */}
+                <path d="M155 92 C165 110, 172 125, 174 132" stroke="#1c1c22" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M245 92 C235 110, 228 125, 226 132" stroke="#1c1c22" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M125 92 C135 112, 142 128, 145 136" stroke="#16161c" strokeWidth="1" strokeLinecap="round" />
+                <path d="M275 92 C265 112, 258 128, 255 136" stroke="#16161c" strokeWidth="1" strokeLinecap="round" />
+
+                {/* Singleframe Grille */}
+                <path d="M160 128 C175 127, 225 127, 240 128 C248 128, 252 135, 248 152 C245 162, 235 166, 200 166 C165 166, 155 162, 152 152 C148 135, 152 128, 160 128 Z" fill="#050507" stroke="#181822" strokeWidth="1.5" />
+                {/* Grille Mesh/Slats */}
+                <line x1="158" y1="135" x2="242" y2="135" stroke="#121218" strokeWidth="1" />
+                <line x1="154" y1="142" x2="246" y2="142" stroke="#121218" strokeWidth="1" />
+                <line x1="151" y1="149" x2="249" y2="149" stroke="#121218" strokeWidth="1" />
+                <line x1="152" y1="156" x2="248" y2="156" stroke="#121218" strokeWidth="1" />
+
+                {/* Sleek Headlights with white/blue neon glow */}
+                {/* Left Headlight */}
+                <path d="M85 112 C100 114, 122 119, 145 127 C135 129, 110 127, 95 122 C88 119, 83 115, 85 112 Z" fill="#0a0a0f" stroke="#22222b" strokeWidth="1" />
+                <path d="M88 113.5 C102 115.5, 122 120.5, 142 126" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" filter="url(#headlight-glow)" />
+                <path d="M88 113.5 C102 115.5, 122 120.5, 142 126" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+
+                {/* Right Headlight */}
+                <path d="M315 112 C300 114, 278 119, 255 127 C265 129, 290 127, 305 122 C312 119, 317 115, 315 112 Z" fill="#0a0a0f" stroke="#22222b" strokeWidth="1" />
+                <path d="M312 113.5 C298 115.5, 278 120.5, 258 126" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" filter="url(#headlight-glow)" />
+                <path d="M312 113.5 C298 115.5, 278 120.5, 258 126" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+
+                {/* Grille Rings / Emblem */}
+                <circle cx="191" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="197" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="203" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="209" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+
+                {/* Lower air intakes */}
+                <path d="M68 132 C78 132, 95 135, 110 144 C100 154, 85 158, 72 154 C65 152, 64 140, 68 132 Z" fill="#050507" stroke="#16161f" strokeWidth="1" />
+                <path d="M72 135 C82 136, 92 142, 102 148" stroke="#121218" strokeWidth="1.5" />
+                <path d="M332 132 C322 132, 305 135, 290 144 C300 154, 315 158, 328 154 C335 152, 336 140, 332 132 Z" fill="#050507" stroke="#16161f" strokeWidth="1" />
+                <path d="M328 135 C318 136, 308 142, 298 148" stroke="#121218" strokeWidth="1.5" />
+
+                {/* Ground splitter */}
+                <path d="M85 156 C120 159, 280 159, 315 156 C325 156, 330 160, 315 162 C280 164, 120 164, 85 162 C70 160, 75 156, 85 156 Z" fill="#14141a" />
+
+                <defs>
+                  <linearGradient id="windshield-grad" x1="200" y1="30" x2="200" y2="94" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                  </linearGradient>
+
+                  <filter id="headlight-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur1" />
+                    <feGaussianBlur stdDeviation="7" result="blur2" />
+                    <feMerge>
+                      <feMergeNode in="blur2" />
+                      <feMergeNode in="blur1" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+              </svg>
+            </div>
+
+            {/* Bottom Sheet White Card */}
+            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 font-sans">
+                  Welcome Back
+                </h2>
+                <p className="text-xs sm:text-sm text-zinc-400 font-medium mt-1">
+                  Login to continue
+                </p>
+              </div>
+
+              <form onSubmit={handleUserLogin} className="space-y-5">
+                {/* Custom Phone wrapper */}
+                <div className="flex items-center bg-white border border-zinc-200 rounded-2xl overflow-hidden focus-within:border-zinc-400 focus-within:ring-4 focus-within:ring-zinc-100 transition-all">
+                  
+                  {/* Country dial code box */}
+                  <div className="flex items-center gap-1.5 px-4 py-3.5 bg-zinc-50/50 cursor-pointer hover:bg-zinc-100/50 transition-colors select-none shrink-0">
+                    <span className="text-sm font-extrabold text-zinc-800 tracking-tight">+91</span>
+                    <ChevronDown className="w-4 h-4 text-zinc-400 shrink-0" />
+                  </div>
+                  
+                  {/* Thin vertical separator */}
+                  <div className="w-[1px] h-7 bg-zinc-200" />
+
+                  {/* Input entry with phone icon */}
+                  <div className="flex-1 flex items-center gap-2 px-3">
+                    <Phone className="w-4 h-4 text-zinc-400 shrink-0" />
+                    <input
+                      type="tel"
+                      required
+                      value={userPhone}
+                      onChange={(e) => setUserPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="Enter your phone number"
+                      className="w-full bg-transparent border-none py-3 px-1 text-sm sm:text-base font-semibold text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-0"
+                      maxLength={10}
+                    />
+                  </div>
+                </div>
+
+                {userError && (
+                  <p className="text-xs text-red-600 font-semibold text-center font-mono">
+                    {userError}
+                  </p>
+                )}
+
+                {/* Continue button styling with inline arrow right */}
+                <button
+                  type="submit"
+                  className="w-full bg-[#E31E24] hover:bg-red-700 active:scale-[0.99] text-white font-bold py-4 px-6 rounded-2xl text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-between shadow-lg shadow-red-600/10 hover:shadow-red-600/20"
+                >
+                  <span className="mx-auto pl-4">Continue</span>
+                  <ArrowRight className="w-5 h-5 shrink-0" />
+                </button>
+              </form>
+
+              {/* Secure footer badge */}
+              <div className="mt-6 pt-1 flex items-center justify-center gap-1.5 text-zinc-500">
+                <ShieldCheck className="w-4.5 h-4.5 text-[#E31E24] shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold tracking-tight text-zinc-500">
+                  Your data is safe and secure with us
+                </span>
+              </div>
+            </div>
+
           </div>
         ) : (
-          /* DEDICATED ADMIN LOGIN PAGE */
-          <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-6xl w-full mx-auto animate-fadeIn">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
-              
-              {/* Left Column: Workshop Operational Preview */}
-              <div className="lg:col-span-6 space-y-6 text-left hidden lg:block">
-                <div className="space-y-3">
-                  <span className="bg-[#FFD700]/15 text-[#FFD700] border border-[#FFD700]/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest font-mono">
-                    {currentLanguage === 'hindi' ? 'वर्कशॉप कमांड सेंटर' : currentLanguage === 'telugu' ? 'వర్క్‌షాప్ కమాండ్ సెంటర్' : 'Workshop Command Center'}
-                  </span>
-                  <h2 className="text-3xl xl:text-4xl font-black text-white uppercase tracking-tight italic font-display leading-tight">
-                    {currentLanguage === 'hindi' ? 'वेणु के मास्टर वर्कशॉप को नियंत्रित करें' : currentLanguage === 'telugu' ? 'వేణు మాస్టర్ వర్క్‌షాప్‌ను నియంత్రించండి' : 'Venu Owner CRM & Repair Operations'}
-                  </h2>
-                  <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
-                    {currentLanguage === 'hindi' 
-                      ? 'हैदराबाद के सबसे भरोसेमंद गैरेज का सुरक्षित प्रवेश द्वार। वास्तविक समय में नियुक्तियों को प्रबंधित करें, नए वाहन डायग्नोस्टिक्स रिकॉर्ड बनाएं, और मरम्मत स्थिति अपडेट करें।' 
-                      : currentLanguage === 'telugu' 
-                      ? 'హైదరాబాద్‌లో అత్యంత విశ్వసనీయ గ్యారేజ్ సురక్షిత ప్రవేశం. అపాయింట్‌మెంట్‌లను నిర్వహించండి మరియు కారు స్థితిని అప్‌డేట్ చేయండి.' 
-                      : 'Access Neelkanth Motors CRM. Control live slot bookings, update diagnostic milestones (Pending, Confirmed, Completed), and review customer service statistics directly.'}
-                  </p>
-                </div>
+          /* DEDICATED ADMIN LOGIN PAGE WITH SAME VISUAL STYLE */
+          <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-xl w-full mx-auto animate-fadeIn">
+            {/* Top right customer toggle switch */}
+            <div className="absolute top-0 right-0 z-20">
+              <button
+                onClick={() => setActiveTab('user')}
+                className="px-3 py-1.5 rounded-full bg-zinc-900 border border-white/10 text-[11px] font-bold text-red-400 hover:text-red-300 hover:border-red-400/30 transition-all flex items-center gap-1 cursor-pointer"
+              >
+                <span>Customer Tracking</span> ➔
+              </button>
+            </div>
 
-                {/* Bay Status Mockup Widgets */}
-                <div className="bg-zinc-900 border border-white/5 rounded-sm p-6 space-y-4">
-                  <span className="text-zinc-500 text-[10px] font-bold tracking-widest uppercase font-mono block">ACTIVE REPAIR BAYS SNEAK PEEK</span>
+            {/* Logo & Brand Section */}
+            <div className="flex flex-col items-center justify-center text-center pb-2 pt-6 w-full">
+              {/* Premium geometric stylized Monogram */}
+              <div className="flex items-center justify-center mb-1">
+                <svg className="h-16 w-auto filter drop-shadow-[0_0_20px_rgba(227,30,36,0.25)] select-none" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Stylized White N */}
+                  <path d="M38 45 V15 L46 11 V41 Z" fill="white" />
+                  <path d="M46 11 L62 29 L55 33 L39 15 Z" fill="white" />
+                  {/* Stylized Red M */}
+                  <path d="M58 17 L72 33 L65 37 L51 21 Z" fill="#E31E24" />
+                  <path d="M72 33 L86 11 L93 15 L79 37 Z" fill="#E31E24" />
+                  <path d="M86 11 L93 15 V45 L86 41 Z" fill="#E31E24" />
+                </svg>
+              </div>
+
+              {/* NEELAKANTA Heading */}
+              <h1 className="text-white font-extrabold tracking-[0.16em] text-2xl sm:text-3xl font-sans uppercase">
+                NEELAKANTA
+              </h1>
+
+              {/* MOTORS sub-heading with double line divider */}
+              <div className="flex items-center justify-center gap-3.5 w-full mt-1.5 px-6">
+                <div className="h-[1.5px] flex-1 max-w-[60px] bg-[#E31E24]" />
+                <span className="text-[#E31E24] font-extrabold tracking-[0.25em] text-xs sm:text-sm">MOTORS</span>
+                <div className="h-[1.5px] flex-1 max-w-[60px] bg-[#E31E24]" />
+              </div>
+            </div>
+
+            {/* Sleek Premium Car Silhouette */}
+            <div className="w-full max-w-[340px] sm:max-w-[400px] mx-auto -mt-2 -mb-2 relative">
+              <svg className="w-full h-auto mx-auto select-none filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Ground reflection & shadows */}
+                <ellipse cx="200" cy="164" rx="150" ry="10" fill="rgba(0,0,0,0.9)" filter="blur(6px)" />
+                <ellipse cx="100" cy="161" rx="35" ry="3" fill="rgba(0,0,0,0.6)" filter="blur(3px)" />
+                <ellipse cx="300" cy="161" rx="35" ry="3" fill="rgba(0,0,0,0.6)" filter="blur(3px)" />
+
+                {/* Car body silhouette front view */}
+                <path d="M145 45 C155 35, 175 30, 200 30 C225 30, 245 35, 255 45 C270 58, 285 75, 292 88 C295 93, 290 94, 285 94 C260 94, 140 94, 115 94 C110 94, 105 93, 108 88 C115 75, 130 58, 145 45 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+                <path d="M152 48 C162 40, 180 36, 200 36 C220 36, 238 40, 248 48 C260 59, 272 74, 278 84 C255 86, 145 86, 122 84 C128 74, 140 59, 152 48 Z" fill="url(#windshield-grad)" opacity="0.15" />
+
+                {/* Side mirrors */}
+                <path d="M102 86 C90 85, 75 88, 70 93 C68 95, 70 98, 78 98 C88 98, 98 94, 104 90 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+                <path d="M298 86 C310 85, 325 88, 330 93 C332 95, 330 98, 322 98 C312 98, 302 94, 296 90 Z" fill="#08080a" stroke="#1c1c22" strokeWidth="1" />
+
+                {/* Main Bonnet / Hood */}
+                <path d="M102 92 C120 92, 280 92, 298 92 C312 92, 328 100, 338 112 C345 120, 348 128, 346 134 C342 144, 325 146, 310 148 C280 151, 120 151, 90 148 C75 146, 58 144, 54 134 C52 128, 55 120, 62 112 C72 100, 88 92, 102 92 Z" fill="#0c0c0f" stroke="#22222a" strokeWidth="1.2" />
+
+                {/* Bonnet Crease Lines */}
+                <path d="M155 92 C165 110, 172 125, 174 132" stroke="#1c1c22" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M245 92 C235 110, 228 125, 226 132" stroke="#1c1c22" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M125 92 C135 112, 142 128, 145 136" stroke="#16161c" strokeWidth="1" strokeLinecap="round" />
+                <path d="M275 92 C265 112, 258 128, 255 136" stroke="#16161c" strokeWidth="1" strokeLinecap="round" />
+
+                {/* Singleframe Grille */}
+                <path d="M160 128 C175 127, 225 127, 240 128 C248 128, 252 135, 248 152 C245 162, 235 166, 200 166 C165 166, 155 162, 152 152 C148 135, 152 128, 160 128 Z" fill="#050507" stroke="#181822" strokeWidth="1.5" />
+                <line x1="158" y1="135" x2="242" y2="135" stroke="#121218" strokeWidth="1" />
+                <line x1="154" y1="142" x2="246" y2="142" stroke="#121218" strokeWidth="1" />
+                <line x1="151" y1="149" x2="249" y2="149" stroke="#121218" strokeWidth="1" />
+                <line x1="152" y1="156" x2="248" y2="156" stroke="#121218" strokeWidth="1" />
+
+                {/* Sleek Headlights */}
+                <path d="M85 112 C100 114, 122 119, 145 127 C135 129, 110 127, 95 122 C88 119, 83 115, 85 112 Z" fill="#0a0a0f" stroke="#22222b" strokeWidth="1" />
+                <path d="M88 113.5 C102 115.5, 122 120.5, 142 126" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" filter="url(#headlight-glow)" />
+                <path d="M88 113.5 C102 115.5, 122 120.5, 142 126" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+
+                <path d="M315 112 C300 114, 278 119, 255 127 C265 129, 290 127, 305 122 C312 119, 317 115, 315 112 Z" fill="#0a0a0f" stroke="#22222b" strokeWidth="1" />
+                <path d="M312 113.5 C298 115.5, 278 120.5, 258 126" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" filter="url(#headlight-glow)" />
+                <path d="M312 113.5 C298 115.5, 278 120.5, 258 126" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+
+                {/* Emblem */}
+                <circle cx="191" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="197" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="203" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+                <circle cx="209" cy="136" r="4.5" stroke="#1c1c24" strokeWidth="1" fill="none" />
+
+                {/* Intakes */}
+                <path d="M68 132 C78 132, 95 135, 110 144 C100 154, 85 158, 72 154 C65 152, 64 140, 68 132 Z" fill="#050507" stroke="#16161f" strokeWidth="1" />
+                <path d="M72 135 C82 136, 92 142, 102 148" stroke="#121218" strokeWidth="1.5" />
+                <path d="M332 132 C322 132, 305 135, 290 144 C300 154, 315 158, 328 154 C335 152, 336 140, 332 132 Z" fill="#050507" stroke="#16161f" strokeWidth="1" />
+                <path d="M328 135 C318 136, 308 142, 298 148" stroke="#121218" strokeWidth="1.5" />
+
+                {/* Ground splitter */}
+                <path d="M85 156 C120 159, 280 159, 315 156 C325 156, 330 160, 315 162 C280 164, 120 164, 85 162 C70 160, 75 156, 85 156 Z" fill="#14141a" />
+
+                <defs>
+                  <linearGradient id="windshield-grad" x1="200" y1="30" x2="200" y2="94" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                  </linearGradient>
+
+                  <filter id="headlight-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur1" />
+                    <feGaussianBlur stdDeviation="7" result="blur2" />
+                    <feMerge>
+                      <feMergeNode in="blur2" />
+                      <feMergeNode in="blur1" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+              </svg>
+            </div>
+
+            {/* Bottom Sheet White Card */}
+            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 font-sans">
+                  Staff CRM Panel
+                </h2>
+                <p className="text-xs sm:text-sm text-zinc-400 font-medium mt-1">
+                  Enter passcode to continue
+                </p>
+              </div>
+
+              <form onSubmit={handleAdminLogin} className="space-y-5">
+                {/* Custom Passcode wrapper */}
+                <div className="flex items-center bg-white border border-zinc-200 rounded-2xl overflow-hidden focus-within:border-zinc-400 focus-within:ring-4 focus-within:ring-zinc-100 transition-all">
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-zinc-950 border border-white/5 p-3 rounded-sm space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-zinc-500">BAY 1: HYDRAULIC LIFT</span>
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      </div>
-                      <p className="text-xs font-black uppercase tracking-wider text-white">Hyundai Creta</p>
-                      <span className="text-[9px] uppercase font-mono text-[#FFD700] block">DENTING WORK</span>
-                    </div>
+                  {/* Lock icon box */}
+                  <div className="flex items-center gap-1.5 px-4 py-3.5 bg-zinc-50/50 select-none shrink-0">
+                    <Lock className="w-4 h-4 text-zinc-400 shrink-0" />
+                  </div>
+                  
+                  {/* Thin vertical separator */}
+                  <div className="w-[1px] h-7 bg-zinc-200" />
 
-                    <div className="bg-zinc-950 border border-white/5 p-3 rounded-sm space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-zinc-500">BAY 2: ALIGNMENT</span>
-                        <span className="w-2 h-2 rounded-full bg-green-500" />
-                      </div>
-                      <p className="text-xs font-black uppercase tracking-wider text-white">Honda City</p>
-                      <span className="text-[9px] uppercase font-mono text-blue-400 block">WHEEL BALANCE</span>
-                    </div>
-
-                    <div className="bg-zinc-950 border border-white/5 p-3 rounded-sm space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-zinc-500">BAY 3: REPAINT CAB</span>
-                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                      </div>
-                      <p className="text-xs font-black uppercase tracking-wider text-white">Mahindra XUV700</p>
-                      <span className="text-[9px] uppercase font-mono text-purple-400 block">PANEL SPRAY</span>
-                    </div>
-
-                    <div className="bg-zinc-950 border border-white/5 p-3 rounded-sm space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-zinc-500">BAY 4: ELECTRICAL</span>
-                        <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                      </div>
-                      <p className="text-xs font-black uppercase tracking-wider text-white">Suzuki Baleno</p>
-                      <span className="text-[9px] uppercase font-mono text-yellow-500 block">WIRING FIX</span>
-                    </div>
+                  {/* Input entry */}
+                  <div className="flex-1 flex items-center gap-2 px-3">
+                    <input
+                      type="password"
+                      required
+                      value={passcode}
+                      onChange={(e) => setPasscode(e.target.value)}
+                      placeholder="Enter 4-digit passcode"
+                      className="w-full bg-transparent border-none py-3 px-1 text-sm sm:text-base font-semibold text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-0 tracking-widest text-center"
+                    />
                   </div>
                 </div>
 
-                {/* Owner security disclaimer */}
-                <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-sm p-4 text-xs text-yellow-400/80 flex items-start gap-3">
-                  <ShieldAlert className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
-                  <p className="leading-relaxed">
-                    <strong>Staff Security Protocol:</strong> Unauthorized access attempts are monitored and recorded. Please keep your 4-digit master pin secure at all times. Contact Venu for pin resets.
+                {adminError && (
+                  <p className="text-xs text-red-600 font-semibold text-center font-mono">
+                    {adminError}
                   </p>
-                </div>
+                )}
+
+                {/* Continue button styling with inline arrow right */}
+                <button
+                  type="submit"
+                  className="w-full bg-[#E31E24] hover:bg-red-700 active:scale-[0.99] text-white font-bold py-4 px-6 rounded-2xl text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-between shadow-lg shadow-red-600/10 hover:shadow-red-600/20"
+                >
+                  <span className="mx-auto pl-4">Authenticate</span>
+                  <ArrowRight className="w-5 h-5 shrink-0" />
+                </button>
+              </form>
+
+              {/* Secure footer badge */}
+              <div className="mt-6 pt-1 flex items-center justify-center gap-1.5 text-zinc-500">
+                <ShieldCheck className="w-4.5 h-4.5 text-[#E31E24] shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold tracking-tight text-zinc-500">
+                  Authorized staff access only
+                </span>
               </div>
+            </div>
 
-              {/* Right Column: Admin Secure Login Card */}
-              <div className="lg:col-span-6 w-full max-w-md mx-auto">
-                <div className="bg-zinc-900 border border-white/10 rounded-sm shadow-2xl overflow-hidden text-left">
-                  {/* Header branding */}
-                  <div className="bg-zinc-950 p-6 border-b border-[#FFD700]/20 text-center relative">
-                    <button 
-                      onClick={onClose} 
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-sm bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer"
-                      title="Back to website"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                    </button>
-
-                    <div className="w-12 h-12 bg-[#FFD700] rounded-sm flex items-center justify-center font-black italic text-black text-xl mx-auto shadow-md mb-3">
-                      CRM
-                    </div>
-                    <h3 className="text-lg font-black text-[#FFD700] uppercase tracking-wider italic font-display">
-                      {t.adminLoginTitle}
-                    </h3>
-                    <p className="text-xs text-zinc-500 mt-1 uppercase tracking-widest font-mono">
-                      {currentLanguage === 'hindi' ? 'मालिक सुरक्षित लॉगिन' : currentLanguage === 'telugu' ? 'యజమాని సురక్షిత లాగిన్' : 'Restricted Security Gate'}
-                    </p>
-                  </div>
-
-                  {/* Inner form */}
-                  <div className="p-8 space-y-6">
-                    <form onSubmit={handleAdminLogin} className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono block">
-                          Admin Passcode
-                        </label>
-                        <input
-                          type="password"
-                          required
-                          value={passcode}
-                          onChange={(e) => setPasscode(e.target.value)}
-                          placeholder={t.enterPasscode}
-                          className="w-full bg-zinc-950 border border-white/10 rounded-sm py-3.5 px-4 text-sm font-mono text-center focus:outline-none focus:border-yellow-400 transition-all text-white placeholder:text-zinc-600 tracking-widest"
-                        />
-                      </div>
-
-                      {adminError && <p className="text-xs text-red-500 font-mono text-center">{adminError}</p>}
-
-                      <button
-                        type="submit"
-                        className="w-full bg-[#FFD700] hover:bg-yellow-500 text-black font-black py-3.5 rounded-sm text-xs uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/20"
-                      >
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>{t.loginButton}</span>
-                      </button>
-                    </form>
-
-                    <div className="pt-4 border-t border-white/5 flex flex-col gap-2">
-                      <button
-                        onClick={bypassAdminLogin}
-                        className="w-full bg-zinc-950 border border-white/5 hover:border-white/10 text-[10px] font-mono text-zinc-400 py-2 rounded-sm transition-all cursor-pointer hover:text-white"
-                      >
-                        {t.dashboardBypass}
-                      </button>
-
-                      <button
-                        onClick={() => setActiveTab('user')}
-                        className="text-xs font-mono text-red-500 hover:text-red-400 transition-colors flex items-center justify-center gap-1 cursor-pointer pt-2 animate-pulse"
-                      >
-                        <span>{currentLanguage === 'hindi' ? 'ग्राहक बुकिंग ट्रैकिंग पर जाएं' : currentLanguage === 'telugu' ? 'కస్టమర్ బుకింగ్ ట్రాకింగ్ వెళ్ళండి' : 'Are you a Customer? Track Car Status'} ➔</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            {/* Sub-card bypass assist pill */}
+            <div className="mt-4 text-center z-10 relative">
+              <button
+                type="button"
+                onClick={bypassAdminLogin}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-900/60 border border-white/10 hover:border-white/20 hover:bg-zinc-900 text-zinc-400 hover:text-white rounded-full text-[10px] sm:text-xs transition-all cursor-pointer font-mono"
+              >
+                <span>⚡ Demo Access:</span>
+                <span className="font-bold text-yellow-400">Bypass passcode</span>
+              </button>
             </div>
           </div>
         )
-      ) : isUserAuthenticated ? (
+      ) : activeTab === 'user' ? (
         
         // ==================== 2. CUSTOMER COMPREHENSIVE VIEW ====================
         <div className="max-w-4xl mx-auto w-full space-y-8 relative z-10 text-left">
