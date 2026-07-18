@@ -91,6 +91,7 @@ export default function BookingForm({ selectedServiceId, onBookingSubmitted, res
       const existing: Booking[] = existingStr ? JSON.parse(existingStr) : [];
       existing.unshift(newBooking);
       localStorage.setItem('neelakanta_bookings', JSON.stringify(existing));
+      localStorage.setItem('neelkanth_bookings', JSON.stringify(existing));
 
       // Append to the admin notifications center
       const newAlert = {

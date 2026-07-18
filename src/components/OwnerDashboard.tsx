@@ -96,8 +96,11 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
     }
     let existing: Booking[] = existingStr ? JSON.parse(existingStr) : [];
 
-    // Seed realistic initial mock bookings if empty
-    if (existing.length === 0) {
+    // Check if we've already initialized the data seed once
+    const isSeeded = localStorage.getItem('neelakanta_bookings_seeded') === 'true';
+
+    // Seed realistic initial mock bookings ONLY on very first load to prevent deleted items from coming back
+    if (!isSeeded && existing.length === 0) {
       const mockBookings: Booking[] = [
         {
           id: "BK-8834",
@@ -140,7 +143,12 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         }
       ];
       localStorage.setItem('neelakanta_bookings', JSON.stringify(mockBookings));
+      localStorage.setItem('neelkanth_bookings', JSON.stringify(mockBookings));
+      localStorage.setItem('neelakanta_bookings_seeded', 'true');
       existing = mockBookings;
+    } else if (!isSeeded && existing.length > 0) {
+      // If there's already data from a previous session, mark as seeded to prevent future auto-reseeding if everything is deleted
+      localStorage.setItem('neelakanta_bookings_seeded', 'true');
     }
     setBookings(existing);
   };
@@ -197,7 +205,9 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
       return b;
     });
     localStorage.setItem('neelakanta_bookings', JSON.stringify(updated));
+    localStorage.setItem('neelkanth_bookings', JSON.stringify(updated));
     setBookings(updated);
+    window.dispatchEvent(new Event('storage'));
   };
 
   // Delete Booking (CRM Admin capability)
@@ -208,7 +218,9 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
     if (window.confirm(confirmMessage)) {
       const filtered = bookings.filter(b => b.id !== id);
       localStorage.setItem('neelakanta_bookings', JSON.stringify(filtered));
+      localStorage.setItem('neelkanth_bookings', JSON.stringify(filtered));
       setBookings(filtered);
+      window.dispatchEvent(new Event('storage'));
     }
   };
 
@@ -216,6 +228,7 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   const handleResetData = () => {
     localStorage.removeItem('neelakanta_bookings');
     localStorage.removeItem('neelkanth_bookings');
+    localStorage.removeItem('neelakanta_bookings_seeded');
     loadBookings();
   };
 
@@ -382,7 +395,9 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
     const bList = storedBookings ? JSON.parse(storedBookings) : [];
     bList.unshift(randomBooking);
     localStorage.setItem('neelakanta_bookings', JSON.stringify(bList));
+    localStorage.setItem('neelkanth_bookings', JSON.stringify(bList));
     setBookings(bList);
+    window.dispatchEvent(new Event('storage'));
 
     // Trigger notification
     triggerAlert('booking', randomBooking);
@@ -420,11 +435,14 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         try {
           const newList = JSON.parse(e.newValue);
           const oldList = e.oldValue ? JSON.parse(e.oldValue) : [];
+          
+          // Always keep the list of bookings in state in sync (for updates, deletions, or additions)
+          setBookings(newList);
+
           if (newList.length > oldList.length) {
             // New booking added! Trigger alert
             const addedItem = newList[0];
             triggerAlert('booking', addedItem);
-            setBookings(newList);
           }
         } catch (err) {
           console.error("Error reading updated bookings storage", err);
