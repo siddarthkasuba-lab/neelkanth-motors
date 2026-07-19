@@ -321,3 +321,12 @@ export async function saveOfferConfig(config: OfferConfig): Promise<void> {
   }
   saveLocalConfig(config);
 }
+
+export function resetOffersToDefault() {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_OFFERS));
+  localStorage.setItem('neelkanth_offers_db', JSON.stringify(DEFAULT_OFFERS));
+  localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(DEFAULT_CONFIG));
+  localStorage.setItem('neelkanth_offer_config', JSON.stringify(DEFAULT_CONFIG));
+  window.dispatchEvent(new Event('storage_offers_updated'));
+}
+

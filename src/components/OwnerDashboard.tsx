@@ -10,6 +10,8 @@ import { SERVICES, BUSINESS_INFO } from '../data';
 import { Language, TranslationSet } from '../translations';
 import { useAuth } from '../context/AuthContext';
 import OffersAdmin from '../pages/admin/Offers';
+import { useOffer } from '../hooks/useOffer';
+import { resetOffersToDefault } from '../services/offerService';
 
 interface OwnerDashboardProps {
   onClose: () => void;
@@ -111,10 +113,10 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   // Load bookings database
   const loadBookings = () => {
     let existingStr = localStorage.getItem('neelakanta_bookings');
-    if (!existingStr) {
+    if (existingStr === null) {
       existingStr = localStorage.getItem('neelkanth_bookings');
     }
-    let existing: Booking[] = existingStr ? JSON.parse(existingStr) : [];
+    const existing: Booking[] = existingStr ? JSON.parse(existingStr) : [];
 
     // Check if we've already initialized the data seed once
     const isSeeded = localStorage.getItem('neelakanta_bookings_seeded') === 'true';
@@ -165,12 +167,12 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
       localStorage.setItem('neelakanta_bookings', JSON.stringify(mockBookings));
       localStorage.setItem('neelkanth_bookings', JSON.stringify(mockBookings));
       localStorage.setItem('neelakanta_bookings_seeded', 'true');
-      existing = mockBookings;
-    } else if (!isSeeded && existing.length > 0) {
-      // If there's already data from a previous session, mark as seeded to prevent future auto-reseeding if everything is deleted
+      setBookings(mockBookings);
+    } else {
+      // Ensure the seed flag is set to true to prevent any future auto-reseeding if all are deleted
       localStorage.setItem('neelakanta_bookings_seeded', 'true');
+      setBookings(existing);
     }
-    setBookings(existing);
   };
 
   useEffect(() => {
@@ -250,10 +252,29 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
 
   // Reset Seeding (CRM Admin capability)
   const handleResetData = () => {
+    // 1. Clear all booking-related keys
     localStorage.removeItem('neelakanta_bookings');
     localStorage.removeItem('neelkanth_bookings');
     localStorage.removeItem('neelakanta_bookings_seeded');
+
+    // 2. Clear all notification-related keys
+    localStorage.removeItem('neelakanta_notifications');
+    localStorage.removeItem('neelkanth_notifications');
+
+    // 3. Clear all referral-related keys
+    localStorage.removeItem('neelakanta_referrals');
+    localStorage.removeItem('neelkanth_referrals');
+
+    // 4. Reset offers to standard defaults cleanly using the service function
+    resetOffersToDefault();
+
+    // 5. Re-initialize all data from pristine seeds
     loadBookings();
+    loadNotificationsAndReferrals();
+
+    // 6. Broadcast storage update events to keep other views (like OfferPopup, OffersAdmin, etc.) synced in real-time
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('storage_offers_updated'));
   };
 
   // --- Alerts & Notifications CRM Logic ---
@@ -302,14 +323,11 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
   };
 
   const loadNotificationsAndReferrals = () => {
-    const existingStr = localStorage.getItem('neelakanta_notifications') || localStorage.getItem('neelkanth_notifications');
-    let existingAlerts = existingStr ? JSON.parse(existingStr) : [];
+    const isNotificationsNull = localStorage.getItem('neelakanta_notifications') === null && localStorage.getItem('neelkanth_notifications') === null;
+    const isReferralsNull = localStorage.getItem('neelakanta_referrals') === null && localStorage.getItem('neelkanth_referrals') === null;
 
-    const existingRefStr = localStorage.getItem('neelakanta_referrals') || localStorage.getItem('neelkanth_referrals');
-    let existingRefs = existingRefStr ? JSON.parse(existingRefStr) : [];
-
-    // Seed default notifications and referrals if completely empty
-    if (existingAlerts.length === 0) {
+    let existingAlerts = [];
+    if (isNotificationsNull) {
       existingAlerts = [
         {
           id: "ALT-948121",
@@ -331,9 +349,14 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         }
       ];
       localStorage.setItem('neelakanta_notifications', JSON.stringify(existingAlerts));
+      localStorage.setItem('neelkanth_notifications', JSON.stringify(existingAlerts));
+    } else {
+      const existingStr = localStorage.getItem('neelakanta_notifications') || localStorage.getItem('neelkanth_notifications');
+      existingAlerts = existingStr ? JSON.parse(existingStr) : [];
     }
 
-    if (existingRefs.length === 0) {
+    let existingRefs = [];
+    if (isReferralsNull) {
       existingRefs = [
         {
           id: "REF-1002",
@@ -344,6 +367,10 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         }
       ];
       localStorage.setItem('neelakanta_referrals', JSON.stringify(existingRefs));
+      localStorage.setItem('neelkanth_referrals', JSON.stringify(existingRefs));
+    } else {
+      const existingRefStr = localStorage.getItem('neelakanta_referrals') || localStorage.getItem('neelkanth_referrals');
+      existingRefs = existingRefStr ? JSON.parse(existingRefStr) : [];
     }
 
     setNotifications(existingAlerts);
@@ -463,7 +490,7 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
           
           if (newList.length !== bookings.length) {
             setBookings(newList);
-            if (newList.length > bookings.length) {
+            if (e.key && newList.length > bookings.length) {
               const addedItem = newList[0];
               triggerAlert('booking', addedItem);
             }
@@ -484,7 +511,7 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
           
           if (newList.length !== referrals.length) {
             setReferrals(newList);
-            if (newList.length > referrals.length) {
+            if (e.key && newList.length > referrals.length) {
               const addedItem = newList[0];
               triggerAlert('referral', addedItem);
             }
@@ -505,131 +532,7 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
     loadNotificationsAndReferrals();
   }, []);
 
-  const [offers, setOffers] = useState<any[]>([]);
-
-  // Create offer form states
-  const [newOfferTitle, setNewOfferTitle] = useState('');
-  const [newOfferDesc, setNewOfferDesc] = useState('');
-  const [newOfferDiscount, setNewOfferDiscount] = useState('');
-  const [newOfferCode, setNewOfferCode] = useState('');
-  const [newOfferExpiry, setNewOfferExpiry] = useState('');
-  const [newOfferBadge, setNewOfferBadge] = useState('');
-  const [newOfferIsBumper, setNewOfferIsBumper] = useState(false);
-
-  // Load offers from localStorage
-  const loadOffers = () => {
-    const existingStr = localStorage.getItem('neelakanta_offers') || localStorage.getItem('neelkanth_offers');
-    let existing = existingStr ? JSON.parse(existingStr) : [];
-    
-    // Seed default offers if empty
-    if (existing.length === 0) {
-      existing = [
-        {
-          id: "OFF-BUMP-01",
-          title: "NEELAKANTA MEGA BUMPER FESTIVAL PACK",
-          description: "Our supreme bumper deal! Complete multi-point mechanical diagnostic review, computerized 3D wheel alignment, high-pressure foam wash, liquid wax polish, engine oil level correction, AC service, and full interior dashboard dresser treatment.",
-          discount: "FLAT 50% OFF (Only ₹2,499)",
-          code: "BUMPER50",
-          isBumper: true,
-          expiryDate: new Date(Date.now() + 60 * 86400000).toISOString().split('T')[0], // 60 days duration
-          badge: "BUMPER SPECIAL",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: "OFF-SHINE-20",
-          title: "Ceramic Paint Protection & Detailing",
-          description: "Dual-layer hydrophobic ceramic coat application. Prevents scratches, UV fading, and provides deep mirror gloss glaze. Comes with an official 1-year workshop warranty sheet signed by Venu.",
-          discount: "20% FLAT DISCOUNT",
-          code: "SHINE20",
-          isBumper: false,
-          expiryDate: "2026-07-31",
-          badge: "BODY & PAINT",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: "OFF-WHEEL-10",
-          title: "Laser Alignment & Dynamic balancing",
-          description: "Get pristine high-speed stability and prolong tire life. Includes computerized laser calibration, dynamic rim weight balancing, suspension health check, and tire pressure adjustment.",
-          discount: "FREE WHEEL BALANCING & WEIGHTS",
-          code: "ALIGNFREE",
-          isBumper: false,
-          expiryDate: "2026-07-25",
-          badge: "WHEEL & TYRES",
-          createdAt: new Date().toISOString()
-        }
-      ];
-      localStorage.setItem('neelakanta_offers', JSON.stringify(existing));
-    } else {
-      // Map any outdated brand names in existing loaded defaults
-      existing = existing.map((o: any) => {
-        if (o.title === "NEELKANTH MEGA BUMPER FESTIVAL PACK" || o.title === "NEELAKANTA MEGA BUMPER FESTIVAL PACK") {
-          const targetExp = new Date(new Date(o.createdAt || Date.now()).getTime() + 60 * 86400000).toISOString().split('T')[0];
-          return { 
-            ...o, 
-            title: "NEELAKANTA MEGA BUMPER FESTIVAL PACK",
-            expiryDate: targetExp
-          };
-        }
-        return o;
-      });
-    }
-    setOffers(existing);
-  };
-
-  useEffect(() => {
-    loadOffers();
-  }, []);
-
-  const handleCreateOffer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newOfferTitle.trim() || !newOfferDesc.trim() || !newOfferDiscount.trim() || !newOfferCode.trim()) {
-      alert("Please fill out all required fields.");
-      return;
-    }
-
-    const newOffer = {
-      id: "OFF-" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-      title: newOfferTitle.trim(),
-      description: newOfferDesc.trim(),
-      discount: newOfferDiscount.trim(),
-      code: newOfferCode.trim().toUpperCase(),
-      isBumper: newOfferIsBumper,
-      expiryDate: newOfferExpiry || "2026-12-31",
-      badge: newOfferBadge.trim().toUpperCase() || "PROMO",
-      createdAt: new Date().toISOString()
-    };
-
-    let updatedOffers = [...offers];
-    if (newOfferIsBumper) {
-      // If setting this one as bumper, un-bumper the others
-      updatedOffers = updatedOffers.map(o => ({ ...o, isBumper: false }));
-    }
-    updatedOffers.push(newOffer);
-
-    localStorage.setItem('neelakanta_offers', JSON.stringify(updatedOffers));
-    setOffers(updatedOffers);
-
-    // Reset form
-    setNewOfferTitle('');
-    setNewOfferDesc('');
-    setNewOfferDiscount('');
-    setNewOfferCode('');
-    setNewOfferExpiry('');
-    setNewOfferBadge('');
-    setNewOfferIsBumper(false);
-  };
-
-  const handleDeleteOffer = (id: string) => {
-    customConfirm(
-      "Delete Offer?",
-      "Are you sure you want to delete this promotional offer? This cannot be undone.",
-      () => {
-        const updated = offers.filter(o => o.id !== id);
-        localStorage.setItem('neelakanta_offers', JSON.stringify(updated));
-        setOffers(updated);
-      }
-    );
-  };
+  const { offers: globalOffers } = useOffer();
 
   // Filter Bookings for Admin view
   const filteredBookings = bookings.filter(b => {
@@ -778,13 +681,39 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
             </div>
 
             {/* Bottom Sheet White Card */}
-            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100">
+            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100 animate-fadeIn">
+              {/* Dual Role Selector Tab */}
+              <div className="flex bg-zinc-100 p-1 rounded-2xl mb-6 border border-zinc-200/50">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('user')}
+                  className={`flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-150 cursor-pointer ${
+                    activeTab === 'user'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-600/10'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  Customer Status
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('admin')}
+                  className={`flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-150 cursor-pointer ${
+                    activeTab === 'admin'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-600/10'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  Staff/Owner CRM
+                </button>
+              </div>
+
               <div className="text-center mb-6">
                 <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 font-sans">
                   Welcome Back
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-400 font-medium mt-1">
-                  Login to continue
+                  Enter mobile to track bookings
                 </p>
               </div>
 
@@ -845,15 +774,6 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
         ) : (
           /* DEDICATED ADMIN LOGIN PAGE WITH SAME VISUAL STYLE */
           <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-6 max-w-xl w-full mx-auto animate-fadeIn">
-            {/* Top right customer toggle switch */}
-            <div className="absolute top-0 right-0 z-20">
-              <button
-                onClick={() => setActiveTab('user')}
-                className="px-3 py-1.5 rounded-full bg-zinc-900 border border-white/10 text-[11px] font-bold text-red-400 hover:text-red-300 hover:border-red-400/30 transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <span>Customer Tracking</span> ➔
-              </button>
-            </div>
 
             {/* Logo & Brand Section */}
             <div className="flex flex-col items-center justify-center text-center pb-2 pt-6 w-full">
@@ -959,7 +879,33 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
             </div>
 
             {/* Bottom Sheet White Card */}
-            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100">
+            <div className="bg-white rounded-[32px] p-6 sm:p-8 text-zinc-900 shadow-2xl w-full max-w-[390px] mx-auto relative z-10 border border-zinc-100 animate-fadeIn">
+              {/* Dual Role Selector Tab */}
+              <div className="flex bg-zinc-100 p-1 rounded-2xl mb-6 border border-zinc-200/50">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('user')}
+                  className={`flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-150 cursor-pointer ${
+                    activeTab === 'user'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-600/10'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  Customer Status
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('admin')}
+                  className={`flex-1 py-2 px-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-150 cursor-pointer ${
+                    activeTab === 'admin'
+                      ? 'bg-red-600 text-white shadow-md shadow-red-600/10'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  Staff/Owner CRM
+                </button>
+              </div>
+
               <div className="text-center mb-6">
                 <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 font-sans">
                   Staff CRM Panel
@@ -1341,7 +1287,7 @@ export default function OwnerDashboard({ onClose, t, currentLanguage, initialTab
                     : 'border-transparent text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                🎉 Create & Manage Offers ({offers.length})
+                🎉 Create & Manage Offers ({globalOffers.length})
               </button>
               <button
                 onClick={() => setAdminActiveSection('alerts')}
